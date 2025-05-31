@@ -1,0 +1,18 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "TechmantUsuariosApplication",
+            "request": "launch",
+            "mainClass": "com.example.techmant_usuarios.TechmantUsuariosApplication",
+            "projectName": "techmant-usuarios"
+        },
+        {
+            "name": "Attach to Chrome",
+            "port": 9222,
+            "request": "attach",
+            "type": "chrome",
+            "webRoot": "${workspaceFolder}"
+        }
+    ]
+}
