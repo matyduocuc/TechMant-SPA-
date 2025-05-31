@@ -1,5 +1,6 @@
 package com.example.gestion.de.reportes.repository;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -9,8 +10,9 @@ import com.example.gestion.de.reportes.model.Reporte;
 
 @Repository
 public interface ReporteRepository extends JpaRepository<Reporte, Long> {
-      List<Reporte> findByClienteId(Long clienteId);
-
-     List<Reporte> findByTecnicoId(Long tecnicoId);
+    List<Reporte> findByClienteId(Long clienteId);
+    List<Reporte> findByTecnicoId(Long tecnicoId);
+    List<Reporte> findByFechaReporte(LocalDate fecha);
+    List<Reporte> findByEstadoFinalIgnoreCase(String estadoFinal);
 
 }

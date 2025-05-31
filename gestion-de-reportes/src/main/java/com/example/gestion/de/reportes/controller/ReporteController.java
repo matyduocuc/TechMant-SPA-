@@ -1,14 +1,10 @@
 package com.example.gestion.de.reportes.controller;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.example.gestion.de.reportes.model.Reporte;
 import com.example.gestion.de.reportes.services.ReporteService;
@@ -16,7 +12,8 @@ import com.example.gestion.de.reportes.services.ReporteService;
 @RestController
 @RequestMapping("/api/reportes")
 public class ReporteController {
-      @Autowired
+
+    @Autowired
     private ReporteService reporteService;
 
     @PostMapping
@@ -39,4 +36,15 @@ public class ReporteController {
         return reporteService.listarPorTecnico(id);
     }
 
+    @GetMapping("/fecha/{fecha}")
+    public List<Reporte> porFecha(@PathVariable String fecha) {
+        return reporteService.listarPorFecha(LocalDate.parse(fecha));
+    }
+
+    @GetMapping("/estado/{estado}")
+    public List<Reporte> porEstado(@PathVariable String estado) {
+        return reporteService.listarPorEstado(estado);
+    }
 }
+
+

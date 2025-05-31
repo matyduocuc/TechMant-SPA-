@@ -11,7 +11,9 @@ import com.example.gestion.de.reportes.repository.ReporteRepository;
 
 @Service
 public class ReporteService {
-  @Autowired
+
+
+    @Autowired
     private ReporteRepository reporteRepository;
 
     public Reporte crearReporte(Reporte reporte) {
@@ -30,4 +32,13 @@ public class ReporteService {
     public List<Reporte> listarPorTecnico(Long tecnicoId) {
         return reporteRepository.findByTecnicoId(tecnicoId);
     }
+
+    public List<Reporte> listarPorFecha(LocalDate fecha) {
+        return reporteRepository.findByFechaReporte(fecha);
+    }
+
+    public List<Reporte> listarPorEstado(String estado) {
+        return reporteRepository.findByEstadoFinalIgnoreCase(estado);
+    }
+    
 }
