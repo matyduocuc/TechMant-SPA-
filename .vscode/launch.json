@@ -2,6 +2,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "GestionDeEquiposApplication",
+            "request": "launch",
+            "mainClass": "com.example.gestion_de_equipos.GestionDeEquiposApplication",
+            "projectName": "gestion-de-equipos"
+        },
+        {
+            "type": "java",
             "name": "GestionVentasApplication",
             "request": "launch",
             "mainClass": "com.example.gestion_ventas.GestionVentasApplication",
