@@ -2,6 +2,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "GestionServiciosTecnicosApplication",
+            "request": "launch",
+            "mainClass": "com.example.gestion_servicios_tecnicos.GestionServiciosTecnicosApplication",
+            "projectName": "com.example-gestion-servicios-tecnicos"
+        },
+        {
+            "type": "java",
             "name": "GestionDeServiciosApplication",
             "request": "launch",
             "mainClass": "com.example.gestion_de_servicios.GestionDeServiciosApplication",
