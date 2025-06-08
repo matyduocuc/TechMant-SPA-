@@ -2,6 +2,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "GestionDeServiciosApplication",
+            "request": "launch",
+            "mainClass": "com.example.gestion_de_servicios.GestionDeServiciosApplication",
+            "projectName": "com.example-gestion_de_servicios"
+        },
+        {
+            "type": "java",
             "name": "TechmantUsuariosApplication",
             "request": "launch",
             "mainClass": "com.example.techmant_usuarios.TechmantUsuariosApplication",
