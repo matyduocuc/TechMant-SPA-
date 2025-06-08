@@ -2,6 +2,20 @@
     "configurations": [
         {
             "type": "java",
+            "name": "Application",
+            "request": "launch",
+            "mainClass": "com.example.gestion.de.servicios.Application",
+            "projectName": ""
+        },
+        {
+            "type": "java",
+            "name": "GestionDeEquiposApplication",
+            "request": "launch",
+            "mainClass": "com.example.gestion_de_equipos.GestionDeEquiposApplication",
+            "projectName": "com.example-gestion-de-equipos"
+        },
+        {
+            "type": "java",
             "name": "GestionDeEquiposApplication",
             "request": "launch",
             "mainClass": "com.example.gestion_de_equipos.GestionDeEquiposApplication",

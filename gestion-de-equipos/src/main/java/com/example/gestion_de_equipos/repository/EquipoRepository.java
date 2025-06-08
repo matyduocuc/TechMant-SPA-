@@ -11,4 +11,8 @@ import com.example.gestion_de_equipos.model.Equipo;
 public interface EquipoRepository extends JpaRepository<Equipo, Long>  {
     List<Equipo> findByTipoIgnoreCase(String tipo);
     List<Equipo> findByMarcaIgnoreCase(String marca);
+    // Elimina este:
+    // List<Equipo> findAll(String tipo);
+    // Puedes dejar uno solo:
+    List<Equipo> findByMarca(String marca);
 }

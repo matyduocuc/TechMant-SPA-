@@ -35,10 +35,20 @@ public class EquipoController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<Equipo> actualizar(@PathVariable Long id, @Valid @RequestBody Equipo datosActualizados) {
+        return servicio.actualizar(id, datosActualizados)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminar(@PathVariable Long id) {
-        servicio.eliminar(id);
-        return ResponseEntity.noContent().build();
+        if (servicio.eliminar(id)) {
+            return ResponseEntity.noContent().build();
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @GetMapping("/tipo/{tipo}")
