@@ -2,6 +2,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "GestionDeTicketApplication",
+            "request": "launch",
+            "mainClass": "com.example.Gestion_de_ticket.GestionDeTicketApplication",
+            "projectName": "com.example-Gestion_de_ticket"
+        },
+        {
+            "type": "java",
             "name": "GestionServiciosTecnicosApplication",
             "request": "launch",
             "mainClass": "com.example.gestion_servicios_tecnicos.GestionServiciosTecnicosApplication",
