@@ -18,16 +18,19 @@ public class VentaController {
     @Autowired
     private VentaService servicio;
 
+    // Método POST para crear una venta
     @PostMapping
     public Venta crear(@Valid @RequestBody Venta venta) {
         return servicio.guardar(venta);
     }
 
+    // Método GET para listar todas las ventas
     @GetMapping
     public List<Venta> listar() {
         return servicio.listar();
     }
 
+    // Método GET para obtener una venta por ID
     @GetMapping("/{id}")
     public ResponseEntity<Venta> obtenerPorId(@PathVariable Long id) {
         return servicio.buscarPorId(id)
@@ -35,9 +38,31 @@ public class VentaController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    // Nuevo endpoint para buscar por estado
+    // Método GET para buscar ventas por estado
     @GetMapping("/estado/{estado}")
     public List<Venta> obtenerPorEstado(@PathVariable String estado) {
         return servicio.buscarPorEstado(estado);
+    }
+
+    // Nuevo endpoint PUT para actualizar una venta
+    @PutMapping("/{id}")
+    public ResponseEntity<Venta> actualizarVenta(@PathVariable Long id, @Valid @RequestBody Venta venta) {
+        try {
+            Venta ventaActualizada = servicio.actualizarVenta(id, venta);
+            return ResponseEntity.ok(ventaActualizada);
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build(); // Si no se encuentra la venta, retorna 404
+        }
+    }
+
+    // Nuevo endpoint DELETE para eliminar una venta
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> eliminarVenta(@PathVariable Long id) {
+        try {
+            servicio.eliminarVenta(id);
+            return ResponseEntity.noContent().build(); // Retorna un 204 sin contenido después de la eliminación
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build(); // Si no se encuentra la venta, retorna 404
+        }
     }
 }

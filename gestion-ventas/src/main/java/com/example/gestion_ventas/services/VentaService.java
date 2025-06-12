@@ -33,4 +33,41 @@ public class VentaService {
     public List<Venta> buscarPorEstado(String estado) {
         return repo.findByEstadoIgnoreCase(estado);
     }
+
+    // Método para actualizar una venta
+    public Venta actualizarVenta(Long id, Venta ventaActualizada) {
+        // Buscar la venta existente por ID
+        Optional<Venta> ventaExistenteOpt = repo.findById(id);
+        if (ventaExistenteOpt.isPresent()) {
+            Venta ventaExistente = ventaExistenteOpt.get();
+            
+            // Actualizar los campos de la venta
+            ventaExistente.setSolicitudId(ventaActualizada.getSolicitudId());
+            ventaExistente.setClienteId(ventaActualizada.getClienteId());
+            ventaExistente.setTecnicoId(ventaActualizada.getTecnicoId());
+            ventaExistente.setMontoServicio(ventaActualizada.getMontoServicio());
+            ventaExistente.setMontoRepuestos(ventaActualizada.getMontoRepuestos());
+            ventaExistente.setTotalVenta(ventaActualizada.getMontoServicio() + ventaActualizada.getMontoRepuestos());
+            ventaExistente.setDetalleVenta(ventaActualizada.getDetalleVenta());
+            ventaExistente.setEstado(ventaActualizada.getEstado());
+            ventaExistente.setFechaVenta(ventaActualizada.getFechaVenta());
+
+            // Guardar la venta actualizada
+            return repo.save(ventaExistente);
+        } else {
+            throw new RuntimeException("Venta no encontrada");
+        }
+    }
+
+    // Método para eliminar una venta
+    public void eliminarVenta(Long id) {
+    // Buscar la venta por ID
+    Optional<Venta> ventaExistenteOpt = repo.findById(id);
+    if (ventaExistenteOpt.isPresent()) {
+        // Eliminar la venta
+        repo.delete(ventaExistenteOpt.get());
+    } else {
+        throw new RuntimeException("Venta no encontrada");
+    }
+    }
 }
