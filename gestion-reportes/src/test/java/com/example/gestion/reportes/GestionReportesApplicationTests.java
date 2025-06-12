@@ -1,10 +1,10 @@
-package com.example.gestion.de.reportes;
+package com.example.gestion.reportes;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class GestionDeReportesApplicationTests {
+class GestionReportesApplicationTests {
 
 	@Test
 	void contextLoads() {

@@ -1,13 +1,13 @@
-package com.example.gestion.de.reportes;
+package com.example.gestion.reportes;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class GestionDeReportesApplication {
+public class GestionReportesApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(GestionDeReportesApplication.class, args);
+		SpringApplication.run(GestionReportesApplication.class, args);
 	}
 
 }
