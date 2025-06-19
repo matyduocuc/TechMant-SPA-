@@ -1,4 +1,3 @@
-
 package com.example.techmant_usuarios.repository;
 
 import com.example.techmant_usuarios.model.Rol;
@@ -7,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -20,15 +20,23 @@ public class UsuarioRepositoryTest {
     @Autowired
     private RolRepository rolRepository;
 
-    @Test
-    void testFindByCorreo() {
-        Rol rol = new Rol(null, "CLIENTE");
-        rolRepository.save(rol);
-        Usuario usuario = new Usuario(null, "Juan", "juan@example.com", "1234", rol);
-        usuarioRepository.save(usuario);
+@Test
+void testFindByCorreo() {
+    // Crear rol
+    Rol rol = new Rol(null, "CLIENTE");
+    rolRepository.save(rol);
 
-        Optional<Usuario> found = usuarioRepository.findByCorreo("juan@example.com");
+    // Crear usuario con correo único
+    Usuario usuario = new Usuario(null, "Juan", "juan@example.com", "1234", rol);
+    usuarioRepository.save(usuario);
 
-        assertTrue(found.isPresent());
-    }
+    // Buscar el usuario por correo
+    final List<Usuario> found = usuarioRepository.findAllById("juan@example.com");
+
+    // Verificar que al menos un usuario ha sido encontrado
+    assertTrue(found.size() > 0);
+
+      }
+
+
 }

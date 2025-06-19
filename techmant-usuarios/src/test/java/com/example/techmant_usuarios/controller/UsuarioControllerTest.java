@@ -1,4 +1,3 @@
-
 package com.example.techmant_usuarios.controller;
 
 import com.example.techmant_usuarios.DTOs.UsuarioRequestDTO;
@@ -15,8 +14,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-
-import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -70,7 +67,7 @@ public class UsuarioControllerTest {
     void testObtenerUsuarios() throws Exception {
         UsuarioResponseDTO user = new UsuarioResponseDTO(1L, "Juan", "juan@example.com", "CLIENTE");
 
-        Mockito.when(usuarioService.obtenerUsuarios()).thenReturn(List.of(user));
+        Mockito.when(usuarioService.obtenerUsuarios()).thenReturn(java.util.List.of(user));
 
         mockMvc.perform(get("/usuarios"))
                 .andExpect(status().isOk())

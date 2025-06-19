@@ -29,4 +29,15 @@ public class Reporte {
     private String descripcion;      // Resumen del servicio
     private String estadoFinal;      // Ej: "REPARADO", "NO REPARADO", etc.
     private LocalDate fechaReporte;  // Fecha del reporte
+    private String titulo;           // Titulo del reporte
+
+    // Getter y setter para "titulo"
+    public String getTitulo() {
+        return titulo;
+    }
+
+    public void setTitulo(String titulo) {
+        this.titulo = titulo;
+    }
 }
+

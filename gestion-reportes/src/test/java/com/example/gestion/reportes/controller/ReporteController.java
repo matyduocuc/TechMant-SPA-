@@ -38,7 +38,7 @@ public class ReporteController {
     // Obtener reportes por técnico (GET)
     @GetMapping("/tecnico/{id}")
     public List<Reporte> porTecnico(@PathVariable Long id) {
-        return reporteService.listarPorTecnico(id);  // Corrección aquí: Se debe usar listarPorTecnico
+        return reporteService.listarPorTecnico(id);
     }
 
     // Obtener reportes por fecha (GET)
@@ -56,7 +56,7 @@ public class ReporteController {
     // Obtener reportes por título (GET)
     @GetMapping("/titulo/{titulo}")
     public List<Reporte> porTitulo(@PathVariable String titulo) {
-        return reporteService.listarPorTitulo(titulo);  // Corrección aquí: Se debe usar listarPorTitulo
+        return reporteService.listarPorTitulo(titulo);
     }
 
     // Actualizar un reporte (PUT)

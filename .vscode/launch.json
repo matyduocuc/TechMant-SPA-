@@ -5,6 +5,13 @@
             "name": "GestionReportesApplication",
             "request": "launch",
             "mainClass": "com.example.gestion.reportes.GestionReportesApplication",
+            "projectName": "com.example-gestion-reportes"
+        },
+        {
+            "type": "java",
+            "name": "GestionReportesApplication",
+            "request": "launch",
+            "mainClass": "com.example.gestion.reportes.GestionReportesApplication",
             "projectName": "gestion-reportes"
         },
         {

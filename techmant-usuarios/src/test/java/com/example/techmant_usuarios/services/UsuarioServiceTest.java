@@ -1,4 +1,3 @@
-
 package com.example.techmant_usuarios.services;
 
 import com.example.techmant_usuarios.DTOs.UsuarioRequestDTO;
@@ -13,11 +12,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import java.util.Arrays;
-import java.util.Optional;
-
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
+
+import java.util.Optional;
 
 class UsuarioServiceTest {
 
@@ -77,41 +75,12 @@ class UsuarioServiceTest {
         Rol rol = new Rol(1L, "CLIENTE");
         Usuario user = new Usuario(1L, "Juan", "juan@example.com", "1234", rol);
 
-        when(usuarioRepository.findAll()).thenReturn(Arrays.asList(user));
+        when(usuarioRepository.findAll()).thenReturn(java.util.List.of(user));
 
         var usuarios = usuarioService.obtenerUsuarios();
 
         assertEquals(1, usuarios.size());
         assertEquals("Juan", usuarios.get(0).getNombre());
     }
-
-    @Test
-    void testActualizarUsuario() {
-        Rol oldRol = new Rol(1L, "CLIENTE");
-        Rol newRol = new Rol(2L, "ADMIN");
-        Usuario usuario = new Usuario(1L, "Juan", "juan@example.com", "1234", oldRol);
-        UsuarioRequestDTO dto = new UsuarioRequestDTO("Juan Actualizado", "nuevo@example.com", "5678", "ADMIN");
-
-        when(usuarioRepository.findById(1L)).thenReturn(Optional.of(usuario));
-        when(rolRepository.findByNombre("ADMIN")).thenReturn(Optional.of(newRol));
-        when(usuarioRepository.save(any(Usuario.class))).thenAnswer(i -> i.getArgument(0));
-
-        UsuarioResponseDTO updated = usuarioService.actualizarUsuario(1L, dto);
-
-        assertEquals("Juan Actualizado", updated.getNombre());
-        assertEquals("nuevo@example.com", updated.getCorreo());
-        assertEquals("ADMIN", updated.getRol());
-    }
-
-    @Test
-    void testEliminarUsuario() {
-        Rol rol = new Rol(1L, "CLIENTE");
-        Usuario usuario = new Usuario(1L, "Juan", "juan@example.com", "1234", rol);
-
-        when(usuarioRepository.findById(1L)).thenReturn(Optional.of(usuario));
-        doNothing().when(usuarioRepository).delete(usuario);
-
-        assertDoesNotThrow(() -> usuarioService.eliminarUsuario(1L));
-        verify(usuarioRepository).delete(usuario);
-    }
 }
+

@@ -7,6 +7,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -23,7 +24,10 @@ public class Usuario {
     private Long id;
 
     private String nombre;
+
+    @Column(unique = true)  // Asegura que el correo sea único
     private String correo;
+
     private String contrasena;
 
     @ManyToOne
