@@ -46,6 +46,13 @@
             <scope>test</scope>
         </dependency>
 
+        <!-- Jakarta Bean Validation (para @NotBlank y otras anotaciones) -->
+        <dependency>
+            <groupId>jakarta.validation</groupId>
+            <artifactId>jakarta.validation-api</artifactId>
+            <version>3.0.0</version>
+        </dependency>
+
         <!-- Agregar Mockito para pruebas unitarias -->
         <dependency>
             <groupId>org.mockito</groupId>
@@ -60,6 +67,14 @@
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
+
+<!-- Dependencia de Springdoc OpenAPI para generar la documentación de la API -->
+<dependency>
+    <groupId>org.springdoc</groupId>
+    <artifactId>springdoc-openapi-ui</artifactId>
+    <version>1.6.9</version> <!-- Usamos una versión estable anterior -->
+</dependency>
+
 
     </dependencies>
 
@@ -92,3 +107,4 @@
         </plugins>
     </build>
 </project>
+

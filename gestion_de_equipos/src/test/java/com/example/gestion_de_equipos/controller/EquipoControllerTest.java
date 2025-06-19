@@ -1,4 +1,3 @@
-
 package com.example.gestion_de_equipos.controller;
 
 import com.example.gestion_de_equipos.model.Equipo;
@@ -39,7 +38,7 @@ public class EquipoControllerTest {
 
         mockMvc.perform(post("/api/equipos")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("{"nombre":"Equipo A","marca":"Marca A","modelo":"Modelo A","tipo":"Tipo A","descripcion":"Descripción A"}"))
+                .content("{\"nombre\":\"Equipo A\",\"marca\":\"Marca A\",\"modelo\":\"Modelo A\",\"tipo\":\"Tipo A\",\"descripcion\":\"Descripción A\"}"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.nombre").value("Equipo A"))
                 .andExpect(jsonPath("$.marca").value("Marca A"));
