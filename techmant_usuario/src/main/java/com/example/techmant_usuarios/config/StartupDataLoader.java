@@ -16,7 +16,8 @@ public class StartupDataLoader implements CommandLineRunner {
     }
 
     @Override
-    public void run(String... args) {
+    public void run(String... args) throws Exception {
+        // Verifica si los roles ya existen
         if (rolRepository.findAll().isEmpty()) {
             rolRepository.save(new Rol(null, "ADMIN"));
             rolRepository.save(new Rol(null, "TECNICO"));

@@ -1,4 +1,3 @@
-
 package com.example.techmant_usuarios.controller;
 
 import com.example.techmant_usuarios.DTOs.UsuarioRequestDTO;
@@ -41,7 +40,7 @@ public class UsuarioControllerTest {
 
         mockMvc.perform(post("/usuarios/registrar")
                 .contentType("application/json")
-                .content("{"nombre":"Juan","correo":"juan@mail.com","contrasena":"password","rol":"ADMIN"}"))
+                .content("{\"nombre\":\"Juan\",\"correo\":\"juan@mail.com\",\"contrasena\":\"password\",\"rol\":\"ADMIN\"}"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.nombre").value("Juan"))
                 .andExpect(jsonPath("$.correo").value("juan@mail.com"))
