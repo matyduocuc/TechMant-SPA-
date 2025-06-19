@@ -1,10 +1,10 @@
-package com.example.gestion_ventas;
+package com.example.gestion_de_ventas;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class GestionVentasApplicationTests {
+class GestionDeVentasApplicationTests {
 
 	@Test
 	void contextLoads() {
