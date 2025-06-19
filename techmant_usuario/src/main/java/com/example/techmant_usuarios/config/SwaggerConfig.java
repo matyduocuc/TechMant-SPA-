@@ -1,4 +1,4 @@
-package com.example.gestion_de_equipos.config;
+package com.example.techmant_usuarios.config;
 
 
 import org.springdoc.core.models.GroupedOpenApi;
@@ -12,9 +12,7 @@ public class SwaggerConfig {
     public GroupedOpenApi publicApi() {
         return GroupedOpenApi.builder()
                 .group("public")
-                .pathsToMatch("/api/**")  // Escanea todas las rutas que empiezan con "/api/"
+                .pathsToMatch("/usuarios/**")  // Se asegura de que se incluyan las rutas de "/usuarios"
                 .build();
     }
 }
-
-

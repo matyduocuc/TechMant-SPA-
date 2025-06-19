@@ -24,7 +24,6 @@ public class EquipoController {
     // Crear un nuevo equipo
     @PostMapping
     public ResponseEntity<?> crear(@Valid @RequestBody Equipo equipo, BindingResult result) {
-        // Verificamos si hay errores de validación
         if (result.hasErrors()) {
             StringBuilder errorMessage = new StringBuilder();
             for (FieldError error : result.getFieldErrors()) {
@@ -52,26 +51,18 @@ public class EquipoController {
 
     // Actualizar equipo por ID
     @PutMapping("/{id}")
-    public ResponseEntity<Equipo> actualizar(@PathVariable Long id, @Valid @RequestBody Equipo datosActualizados, BindingResult result) {
-        // Verificamos si hay errores de validación
+    public ResponseEntity<?> actualizar(@PathVariable Long id, @Valid @RequestBody Equipo datosActualizados, BindingResult result) {
         if (result.hasErrors()) {
             StringBuilder errorMessage = new StringBuilder();
             for (FieldError error : result.getFieldErrors()) {
-                errorMessage.append(error.getField()).append(" ").append(error.getDefaultMessage()).append(";");
+                errorMessage.append(error.getField()).append(" ").append(error.getDefaultMessage()).append("; ");
             }
-            return ResponseEntity.badRequest().body(null);
+            return ResponseEntity.badRequest().body(errorMessage.toString());
         }
 
-        // Intentamos actualizar el equipo
         Optional<Equipo> equipoActualizado = servicio.actualizar(id, datosActualizados);
-
-        // Si el equipo fue encontrado y actualizado
-        if (equipoActualizado.isPresent()) {
-            return ResponseEntity.ok(equipoActualizado.get());
-        }
-
-        // Si no se encuentra el equipo
-        return ResponseEntity.notFound().build();
+        return equipoActualizado.map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     // Eliminar equipo por ID
@@ -96,3 +87,4 @@ public class EquipoController {
         return servicio.buscarPorMarca(marca);
     }
 }
+

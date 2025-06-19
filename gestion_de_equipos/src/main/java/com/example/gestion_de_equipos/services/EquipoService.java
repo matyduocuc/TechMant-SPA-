@@ -11,6 +11,7 @@ import com.example.gestion_de_equipos.repository.EquipoRepository;
 
 @Service
 public class EquipoService {
+
     @Autowired
     private EquipoRepository repo;
 
@@ -46,10 +47,12 @@ public class EquipoService {
     }
 
     public List<Equipo> buscarPorTipo(String tipo) {
-        return repo.findAll();
+        return repo.findByTipoIgnoreCase(tipo);
     }
 
     public List<Equipo> buscarPorMarca(String marca) {
-        return repo.findByMarca(marca);
+        return repo.findByMarcaIgnoreCase(marca);
     }
 }
+
+
