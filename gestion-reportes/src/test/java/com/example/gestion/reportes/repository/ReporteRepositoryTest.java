@@ -136,6 +136,14 @@ public class ReporteRepositoryTest {
         assertFalse(reportes.isEmpty());
         assertEquals("NO REPARADO", reportes.get(0).getEstadoFinal());
     }
+
+    public ReporteRepository getReporteRepository() {
+        return reporteRepository;
+    }
+
+    public void setReporteRepository(ReporteRepository reporteRepository) {
+        this.reporteRepository = reporteRepository;
+    }
 }
 
 
