@@ -2,6 +2,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "AsignacionesDeTecnicosApplication",
+            "request": "launch",
+            "mainClass": "com.example.asignaciones.de.tecnicos.AsignacionesDeTecnicosApplication",
+            "projectName": "com.example-gestion-de-reportes"
+        },
+        {
+            "type": "java",
             "name": "GestionDeVentasApplication",
             "request": "launch",
             "mainClass": "com.example.gestion_de_ventas.GestionDeVentasApplication",
