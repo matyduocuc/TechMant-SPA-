@@ -1,6 +1,6 @@
 package com.example.gestion_servicios_tecnicos.controller;
 
-import com.example.gestion_servicios_tecnicos.model.ServicioTecnico;
+
 import com.example.gestion_servicios_tecnicos.services.ServicioTecnicoService;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
