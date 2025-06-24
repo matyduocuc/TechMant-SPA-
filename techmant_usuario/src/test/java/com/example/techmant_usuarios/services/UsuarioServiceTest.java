@@ -1,21 +1,23 @@
-package com.example.techmant_usuarios.services;
+    package com.example.techmant_usuarios.services;
 
+import com.example.techmant_usuarios.DTOs.UsuarioRequestDTO;
+import com.example.techmant_usuarios.DTOs.UsuarioResponseDTO;
 import com.example.techmant_usuarios.model.Rol;
 import com.example.techmant_usuarios.model.Usuario;
 import com.example.techmant_usuarios.repository.RolRepository;
 import com.example.techmant_usuarios.repository.UsuarioRepository;
-import com.example.techmant_usuarios.DTOs.UsuarioRequestDTO;
-import com.example.techmant_usuarios.DTOs.UsuarioResponseDTO;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import static org.mockito.Mockito.*;
-import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
 import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 public class UsuarioServiceTest {
 
@@ -67,6 +69,23 @@ public class UsuarioServiceTest {
     }
 
     @Test
+    public void testLoginContrasenaIncorrecta() {
+        String correo = "juan@mail.com";
+        String contrasena = "password";
+
+        Rol rol = new Rol(1L, "ADMIN");
+        Usuario usuario = new Usuario(1L, "Juan", correo, "otraClave", rol);
+
+        when(usuarioRepository.findByCorreo(correo)).thenReturn(Optional.of(usuario));
+
+        Exception ex = assertThrows(RuntimeException.class, () -> {
+            usuarioService.login(correo, contrasena);
+        });
+
+        assertTrue(ex.getMessage().contains("Contraseña incorrecta"));
+    }
+
+    @Test
     public void testObtenerUsuarios() {
         Rol rol = new Rol(1L, "ADMIN");
         Usuario usuario = new Usuario(1L, "Juan", "juan@mail.com", "password", rol);
@@ -83,15 +102,15 @@ public class UsuarioServiceTest {
     @Test
     public void testActualizarUsuario() {
         Long id = 1L;
-        UsuarioRequestDTO usuarioRequestDTO = new UsuarioRequestDTO("Juan Updated", "juan@mail.com", "newpassword", "CLIENTE");
-        Rol rol = new Rol(1L, "CLIENTE");
+        UsuarioRequestDTO dto = new UsuarioRequestDTO("Juan Updated", "juan@mail.com", "newpassword", "CLIENTE");
+        Rol rol = new Rol(2L, "CLIENTE");
         Usuario usuario = new Usuario(id, "Juan", "juan@mail.com", "password", rol);
 
         when(usuarioRepository.findById(id)).thenReturn(Optional.of(usuario));
         when(rolRepository.findByNombre("CLIENTE")).thenReturn(Optional.of(rol));
         when(usuarioRepository.save(any(Usuario.class))).thenReturn(usuario);
 
-        UsuarioResponseDTO result = usuarioService.actualizarUsuario(id, usuarioRequestDTO);
+        UsuarioResponseDTO result = usuarioService.actualizarUsuario(id, dto);
 
         assertEquals("Juan Updated", result.getNombre());
         assertEquals("CLIENTE", result.getRol());
@@ -107,5 +126,20 @@ public class UsuarioServiceTest {
         usuarioService.eliminarUsuario(id);
 
         verify(usuarioRepository, times(1)).delete(usuario);
+    }
+
+    @Test
+    public void testObtenerPorId() {
+        Long id = 1L;
+        Rol rol = new Rol(1L, "ADMIN");
+        Usuario usuario = new Usuario(id, "Juan", "juan@mail.com", "password", rol);
+
+        when(usuarioRepository.findById(id)).thenReturn(Optional.of(usuario));
+
+        Optional<UsuarioResponseDTO> result = usuarioService.obtenerPorId(id);
+
+        assertTrue(result.isPresent());
+        assertEquals("Juan", result.get().getNombre());
+        assertEquals("ADMIN", result.get().getRol());
     }
 }

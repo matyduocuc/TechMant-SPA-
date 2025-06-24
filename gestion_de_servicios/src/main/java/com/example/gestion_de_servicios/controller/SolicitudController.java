@@ -4,17 +4,12 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import com.example.gestion_de_servicios.dto.SolicitudConUsuarioDTO;
 import com.example.gestion_de_servicios.model.Solicitud;
 import com.example.gestion_de_servicios.services.SolicitudService;
+import com.example.gestion_de_servicios.services.SolicitudUsuarioService;
 
 import jakarta.validation.Valid;
 import io.swagger.v3.oas.annotations.Operation;
@@ -28,6 +23,9 @@ public class SolicitudController {
 
     @Autowired
     private SolicitudService servicio;
+
+    @Autowired
+    private SolicitudUsuarioService solicitudUsuarioService;
 
     @Operation(summary = "Crear una nueva solicitud de servicio")
     @ApiResponse(responseCode = "201", description = "Solicitud creada con éxito", content = @Content(schema = @Schema(implementation = Solicitud.class)))
@@ -80,5 +78,15 @@ public class SolicitudController {
         } else {
             return ResponseEntity.notFound().build();
         }
+    }
+
+    @Operation(
+        summary = "Obtener todas las solicitudes con los datos del cliente",
+        description = "Devuelve cada solicitud incluyendo la información del cliente (nombre, correo, rol) desde el microservicio techmant-usuarios."
+    )
+    @ApiResponse(responseCode = "200", description = "Solicitudes con información de usuario obtenidas correctamente", content = @Content(schema = @Schema(implementation = SolicitudConUsuarioDTO.class)))
+    @GetMapping("/detalle-usuario")
+    public List<SolicitudConUsuarioDTO> solicitudesConUsuario() {
+        return solicitudUsuarioService.listarSolicitudesConUsuario();
     }
 }

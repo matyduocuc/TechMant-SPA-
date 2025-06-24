@@ -5,6 +5,7 @@ import com.example.Gestion_de_ticket.model.Ticket;
 import com.example.Gestion_de_ticket.repository.TicketRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.*;
@@ -30,13 +31,22 @@ public class TicketUsuarioService {
             map.put("problemaReportado", ticket.getProblemaReportado());
             map.put("estado", ticket.getEstado());
             map.put("fechaCreacion", ticket.getFechaCreacion());
+            map.put("fechaActualizacion", ticket.getFechaActualizacion());
             map.put("idEquipo", ticket.getIdEquipo());
             map.put("idSolicitud", ticket.getIdSolicitud());
 
+            // Consulta usuario desde techmant-usuarios
             if (ticket.getIdUsuario() != null) {
-                UsuarioResponseDTO usuario = restTemplate.getForObject(
-                        URL_USUARIOS + "/" + ticket.getIdUsuario(), UsuarioResponseDTO.class);
-                map.put("usuario", usuario);
+                try {
+                    UsuarioResponseDTO usuario = restTemplate.getForObject(
+                            URL_USUARIOS + "/" + ticket.getIdUsuario(), UsuarioResponseDTO.class);
+                    map.put("usuario", usuario);
+                } catch (RestClientException ex) {
+                    // En caso de error, registra mensaje claro y continúa
+                    map.put("usuario", "No disponible (error al consultar usuario: " + ex.getMessage() + ")");
+                }
+            } else {
+                map.put("usuario", "No asignado");
             }
 
             resultado.add(map);
