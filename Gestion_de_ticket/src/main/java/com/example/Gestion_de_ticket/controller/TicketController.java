@@ -1,22 +1,16 @@
 package com.example.Gestion_de_ticket.controller;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.example.Gestion_de_ticket.dto.TicketDTO;
 import com.example.Gestion_de_ticket.model.Ticket;
 import com.example.Gestion_de_ticket.services.TicketService;
+import com.example.Gestion_de_ticket.services.TicketUsuarioService;
 
 import jakarta.validation.Valid;
 import io.swagger.v3.oas.annotations.Operation;
@@ -28,9 +22,12 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 public class TicketController {
 
     @Autowired
+    private TicketUsuarioService ticketUsuarioService;
+
+    @Autowired
     private TicketService ticketService;
 
-    @Operation(summary = "Crear un nuevo Ticket")
+    @Operation(summary = "Crear un nuevo Ticket", description = "Crea un nuevo ticket con los datos del cliente y equipo.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "201", description = "Ticket creado con éxito"),
         @ApiResponse(responseCode = "400", description = "Solicitud incorrecta")
@@ -40,7 +37,7 @@ public class TicketController {
         return ticketService.crearTicket(dto);
     }
 
-    @Operation(summary = "Obtener todos los Tickets")
+    @Operation(summary = "Obtener todos los Tickets", description = "Devuelve la lista completa de tickets.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Lista de Tickets obtenida con éxito")
     })
@@ -49,7 +46,7 @@ public class TicketController {
         return ticketService.listarTodos();
     }
 
-    @Operation(summary = "Obtener un Ticket por ID")
+    @Operation(summary = "Obtener un Ticket por ID", description = "Busca un ticket específico por su ID.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Ticket encontrado"),
         @ApiResponse(responseCode = "404", description = "Ticket no encontrado")
@@ -59,7 +56,7 @@ public class TicketController {
         return ticketService.obtenerPorId(id);
     }
 
-    @Operation(summary = "Actualizar un Ticket por ID")
+    @Operation(summary = "Actualizar un Ticket por ID", description = "Actualiza el diagnóstico y estado de un ticket existente.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Ticket actualizado con éxito"),
         @ApiResponse(responseCode = "404", description = "Ticket no encontrado")
@@ -72,7 +69,7 @@ public class TicketController {
         return ticketService.actualizarTicket(id, diagnostico, estado);
     }
 
-    @Operation(summary = "Eliminar un Ticket por ID")
+    @Operation(summary = "Eliminar un Ticket por ID", description = "Elimina un ticket según su ID.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "204", description = "Ticket eliminado con éxito"),
         @ApiResponse(responseCode = "404", description = "Ticket no encontrado")
@@ -80,5 +77,18 @@ public class TicketController {
     @DeleteMapping("/{id}")
     public void eliminar(@PathVariable Long id) {
         ticketService.eliminar(id);
+    }
+
+    @Operation(
+        summary = "Listar Tickets con información del Usuario",
+        description = "Este endpoint devuelve todos los tickets con los datos del usuario asociados, obtenidos desde el microservicio techmant-usuarios."
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Tickets con usuario obtenidos correctamente"),
+        @ApiResponse(responseCode = "500", description = "Error al obtener los datos de usuario")
+    })
+    @GetMapping("/detalle-usuarios")
+    public List<Map<String, Object>> ticketsConUsuario() {
+        return ticketUsuarioService.obtenerTicketsConUsuario();
     }
 }
