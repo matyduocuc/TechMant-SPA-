@@ -1,3 +1,5 @@
+package com.example.gestion_de_servicios.dto;
+
 import com.example.gestion_de_servicios.model.Solicitud;
 import lombok.AllArgsConstructor;
 import lombok.Data;
