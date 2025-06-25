@@ -1,12 +1,6 @@
 package com.example.gestion.reportes.controller;
 
-import com.example.gestion.reportes.dto.ReporteConUsuarioDTO;
-import com.example.gestion.reportes.dto.UsuarioResponseDTO;
-import com.example.gestion.reportes.model.Reporte;
 import com.example.gestion.reportes.services.ReporteEstadisticoService;
-import com.example.gestion.reportes.services.ReporteUsuarioService;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -16,10 +10,11 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -31,20 +26,13 @@ class ReporteEstadisticoControllerTest {
     @Mock
     private ReporteEstadisticoService servicio;
 
-    @Mock
-    private ReporteUsuarioService reporteUsuarioService;
-
     @InjectMocks
     private ReporteEstadisticoController controller;
-
-    private ObjectMapper mapper;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
         mockMvc = MockMvcBuilders.standaloneSetup(controller).build();
-        mapper = new ObjectMapper();
-        mapper.registerModule(new JavaTimeModule());
     }
 
     @Test
@@ -103,20 +91,5 @@ class ReporteEstadisticoControllerTest {
         mockMvc.perform(delete("/api/reportes-estadisticos/ventas/1"))
                 .andExpect(status().isNoContent());
     }
-
-    @Test
-    void testDetalleUsuarios() throws Exception {
-        Reporte reporte = new Reporte(1L, 10L, 4L, 3L, "Revisión", "COMPLETADO", LocalDate.now(), "Reporte técnico");
-        UsuarioResponseDTO cliente = new UsuarioResponseDTO(4L, "Cliente Prueba", "cliente@mail.com", "CLIENTE");
-        UsuarioResponseDTO tecnico = new UsuarioResponseDTO(3L, "Tecnico Prueba", "tecnico@mail.com", "TECNICO");
-
-        ReporteConUsuarioDTO dto = new ReporteConUsuarioDTO(reporte, cliente, tecnico);
-
-        when(reporteUsuarioService.obtenerReportesConUsuarios()).thenReturn(List.of(dto));
-
-        mockMvc.perform(get("/api/reportes-estadisticos/detalle-usuarios"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].cliente.nombre").value("Cliente Prueba"))
-                .andExpect(jsonPath("$[0].tecnico.nombre").value("Tecnico Prueba"));
-    }
 }
+

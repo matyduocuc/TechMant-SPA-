@@ -1,7 +1,9 @@
 package com.example.gestion.reportes.controller;
 
+import com.example.gestion.reportes.dto.ReporteConUsuarioDTO;
 import com.example.gestion.reportes.model.Reporte;
 import com.example.gestion.reportes.services.ReporteService;
+import com.example.gestion.reportes.services.ReporteUsuarioService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -19,6 +21,9 @@ public class ReporteController {
 
     @Autowired
     private ReporteService reporteService;
+
+    @Autowired
+    private ReporteUsuarioService reporteUsuarioService;
 
     @Operation(summary = "Crear un nuevo reporte",
                description = "Crea y registra un nuevo reporte en el sistema.",
@@ -97,4 +102,15 @@ public class ReporteController {
         reporteService.eliminarReporte(id);
         return ResponseEntity.noContent().build();
     }
-}
+
+    @Operation(summary = "Listar reportes con datos de usuario",
+               description = "Obtiene una lista de reportes con la información del cliente y técnico asociada.",
+               responses = {
+                   @ApiResponse(responseCode = "200", description = "Lista de reportes con usuarios",
+                                content = @Content(schema = @Schema(implementation = ReporteConUsuarioDTO.class)))
+               })
+    @GetMapping("/detalle-usuarios")
+    public List<ReporteConUsuarioDTO> detalleConUsuarios() {
+        return reporteUsuarioService.obtenerReportesConUsuarios();
+    }
+} 
