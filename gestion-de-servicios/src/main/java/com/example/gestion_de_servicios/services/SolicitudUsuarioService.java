@@ -6,6 +6,7 @@ import com.example.gestion_de_servicios.dto.UsuarioResponseDTO;
 import com.example.gestion_de_servicios.dto.SolicitudConUsuarioDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
@@ -33,8 +34,9 @@ public class SolicitudUsuarioService {
                 try {
                     usuario = restTemplate.getForObject(
                             URL_USUARIOS + "/" + solicitud.getClienteId(), UsuarioResponseDTO.class);
+                } catch (HttpClientErrorException.NotFound e) {
+                    System.out.println("Usuario no encontrado con ID: " + solicitud.getClienteId());
                 } catch (Exception e) {
-                    // En caso de error, dejamos usuario como null
                     System.out.println("Error al obtener usuario con ID " + solicitud.getClienteId() + ": " + e.getMessage());
                 }
             }
@@ -45,3 +47,4 @@ public class SolicitudUsuarioService {
         return resultado;
     }
 }
+
