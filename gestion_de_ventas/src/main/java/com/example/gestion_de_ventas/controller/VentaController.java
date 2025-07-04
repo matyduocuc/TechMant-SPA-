@@ -29,17 +29,23 @@ public class VentaController {
     private VentaUsuarioService ventaUsuarioService;
 
     @Operation(summary = "Registrar una nueva venta")
-    @ApiResponse(responseCode = "201", description = "Venta registrada con éxito", 
-        content = @Content(schema = @Schema(implementation = Venta.class)))
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "201", description = "Venta registrada con éxito", content = @Content(schema = @Schema(implementation = Venta.class))),
+        @ApiResponse(responseCode = "400", description = "Datos inválidos"),
+        @ApiResponse(responseCode = "500", description = "Error interno")
+    })
     @PostMapping
     public ResponseEntity<Venta> crear(@Valid @RequestBody Venta venta) {
         Venta guardada = ventaService.guardar(venta);
-        return ResponseEntity.ok(guardada);
+        return ResponseEntity.status(201).body(guardada);
     }
 
     @Operation(summary = "Listar todas las ventas")
-    @ApiResponse(responseCode = "200", description = "Lista de ventas",
-        content = @Content(schema = @Schema(implementation = Venta.class)))
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Lista de ventas", content = @Content(schema = @Schema(implementation = Venta.class))),
+        @ApiResponse(responseCode = "204", description = "No hay ventas disponibles"),
+        @ApiResponse(responseCode = "500", description = "Error interno")
+    })
     @GetMapping
     public List<Venta> listar() {
         return ventaService.listar();
@@ -47,8 +53,7 @@ public class VentaController {
 
     @Operation(summary = "Buscar venta por ID")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Venta encontrada", 
-            content = @Content(schema = @Schema(implementation = Venta.class))),
+        @ApiResponse(responseCode = "200", description = "Venta encontrada", content = @Content(schema = @Schema(implementation = Venta.class))),
         @ApiResponse(responseCode = "404", description = "Venta no encontrada")
     })
     @GetMapping("/{id}")
@@ -60,8 +65,8 @@ public class VentaController {
 
     @Operation(summary = "Actualizar una venta existente")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Venta actualizada con éxito", 
-            content = @Content(schema = @Schema(implementation = Venta.class))),
+        @ApiResponse(responseCode = "200", description = "Venta actualizada con éxito", content = @Content(schema = @Schema(implementation = Venta.class))),
+        @ApiResponse(responseCode = "400", description = "Datos inválidos"),
         @ApiResponse(responseCode = "404", description = "Venta no encontrada")
     })
     @PutMapping("/{id}")
@@ -86,8 +91,10 @@ public class VentaController {
     }
 
     @Operation(summary = "Listar ventas con detalle de cliente")
-    @ApiResponse(responseCode = "200", description = "Lista de ventas con información de cliente",
-        content = @Content(schema = @Schema(implementation = VentaConUsuarioDTO.class)))
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Lista de ventas con información de cliente", content = @Content(schema = @Schema(implementation = VentaConUsuarioDTO.class))),
+        @ApiResponse(responseCode = "500", description = "Error al consultar el microservicio de usuarios")
+    })
     @GetMapping("/detalle-clientes")
     public List<VentaConUsuarioDTO> detalleClientes() {
         return ventaUsuarioService.obtenerVentasConUsuarios();

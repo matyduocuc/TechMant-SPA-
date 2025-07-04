@@ -1,5 +1,6 @@
 package com.example.techmant_usuarios.services;
 
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.example.techmant_usuarios.DTOs.UsuarioRequestDTO;
@@ -18,10 +19,12 @@ public class UsuarioService {
 
     private final UsuarioRepository usuarioRepo;
     private final RolRepository rolRepo;
+    private final BCryptPasswordEncoder passwordEncoder;
 
-    public UsuarioService(UsuarioRepository usuarioRepo, RolRepository rolRepo) {
+    public UsuarioService(UsuarioRepository usuarioRepo, RolRepository rolRepo, BCryptPasswordEncoder passwordEncoder) {
         this.usuarioRepo = usuarioRepo;
         this.rolRepo = rolRepo;
+        this.passwordEncoder = passwordEncoder;
     }
 
     // ========================
@@ -29,10 +32,17 @@ public class UsuarioService {
     // ========================
     public UsuarioResponseDTO registrar(UsuarioRequestDTO dto) {
         try {
+            // Validar que el correo no esté ya registrado
+            if (usuarioRepo.findByCorreo(dto.getCorreo()).isPresent()) {
+                throw new RuntimeException("El correo ya está registrado.");
+            }
+
             Rol rol = rolRepo.findByNombre(dto.getRol())
                     .orElseThrow(() -> new RuntimeException("Rol no encontrado"));
 
-            Usuario usuario = new Usuario(null, dto.getNombre(), dto.getCorreo(), dto.getContrasena(), rol);
+            String hash = passwordEncoder.encode(dto.getContrasena());
+
+            Usuario usuario = new Usuario(null, dto.getNombre(), dto.getCorreo(), hash, rol);
             usuarioRepo.save(usuario);
 
             return new UsuarioResponseDTO(usuario.getId(), usuario.getNombre(), usuario.getCorreo(), rol.getNombre());
@@ -57,14 +67,13 @@ public class UsuarioService {
                 throw new RuntimeException("Contraseña o usuario nulos.");
             }
 
-            if (!contrasena.equals(usuario.getContrasena())) {
+            if (!passwordEncoder.matches(contrasena, usuario.getContrasena())) {
                 throw new RuntimeException("Contraseña incorrecta");
             }
 
             return new UsuarioResponseDTO(usuario.getId(), usuario.getNombre(), usuario.getCorreo(), usuario.getRol().getNombre());
 
         } catch (Exception e) {
-            e.printStackTrace();
             throw new RuntimeException("Error en el login: " + e.getMessage(), e);
         }
     }
@@ -109,7 +118,12 @@ public class UsuarioService {
 
             usuario.setNombre(dto.getNombre());
             usuario.setCorreo(dto.getCorreo());
-            usuario.setContrasena(dto.getContrasena());
+
+            if (dto.getContrasena() != null && !dto.getContrasena().isEmpty()) {
+                String hash = passwordEncoder.encode(dto.getContrasena());
+                usuario.setContrasena(hash);
+            }
+
             usuario.setRol(rol);
             usuarioRepo.save(usuario);
 

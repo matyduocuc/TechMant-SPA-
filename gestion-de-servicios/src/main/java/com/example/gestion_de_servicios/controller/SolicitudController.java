@@ -24,17 +24,22 @@ public class SolicitudController {
 
     @Operation(summary = "Crear una nueva solicitud de servicio")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "201", description = "Solicitud creada con éxito", content = @Content(schema = @Schema(implementation = Solicitud.class))),
-        @ApiResponse(responseCode = "400", description = "Datos inválidos")
+        @ApiResponse(responseCode = "201", description = "Solicitud creada con éxito",
+            content = @Content(schema = @Schema(implementation = Solicitud.class))),
+        @ApiResponse(responseCode = "400", description = "Datos inválidos"),
+        @ApiResponse(responseCode = "500", description = "Error interno del servidor")
     })
     @PostMapping
-    public Solicitud crear(@Valid @RequestBody Solicitud solicitud) {
-        return servicio.guardar(solicitud);
+    public ResponseEntity<Solicitud> crear(@Valid @RequestBody Solicitud solicitud) {
+        Solicitud creada = servicio.guardar(solicitud);
+        return ResponseEntity.status(201).body(creada);
     }
 
     @Operation(summary = "Obtener todas las solicitudes")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Lista de solicitudes obtenida correctamente", content = @Content(schema = @Schema(implementation = Solicitud.class)))
+        @ApiResponse(responseCode = "200", description = "Lista de solicitudes obtenida correctamente"),
+        @ApiResponse(responseCode = "204", description = "No hay solicitudes"),
+        @ApiResponse(responseCode = "500", description = "Error interno")
     })
     @GetMapping
     public List<Solicitud> listar() {
@@ -43,7 +48,8 @@ public class SolicitudController {
 
     @Operation(summary = "Obtener una solicitud por su ID")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Solicitud encontrada", content = @Content(schema = @Schema(implementation = Solicitud.class))),
+        @ApiResponse(responseCode = "200", description = "Solicitud encontrada",
+            content = @Content(schema = @Schema(implementation = Solicitud.class))),
         @ApiResponse(responseCode = "404", description = "Solicitud no encontrada")
     })
     @GetMapping("/{id}")
@@ -55,7 +61,8 @@ public class SolicitudController {
 
     @Operation(summary = "Listar solicitudes por ID del cliente")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Solicitudes del cliente obtenidas correctamente", content = @Content(schema = @Schema(implementation = Solicitud.class)))
+        @ApiResponse(responseCode = "200", description = "Solicitudes del cliente obtenidas correctamente"),
+        @ApiResponse(responseCode = "404", description = "Cliente no encontrado")
     })
     @GetMapping("/cliente/{clienteId}")
     public List<Solicitud> listarPorCliente(@PathVariable Long clienteId) {
@@ -64,7 +71,8 @@ public class SolicitudController {
 
     @Operation(summary = "Actualizar una solicitud existente")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Solicitud actualizada correctamente", content = @Content(schema = @Schema(implementation = Solicitud.class))),
+        @ApiResponse(responseCode = "200", description = "Solicitud actualizada correctamente"),
+        @ApiResponse(responseCode = "400", description = "Datos inválidos"),
         @ApiResponse(responseCode = "404", description = "Solicitud no encontrada")
     })
     @PutMapping("/{id}")
@@ -91,7 +99,8 @@ public class SolicitudController {
     @Operation(summary = "Listar solicitudes con información del cliente",
                description = "Devuelve todas las solicitudes con los datos del cliente asociados desde el microservicio techmant-usuarios")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Solicitudes con clientes obtenidas correctamente", content = @Content(schema = @Schema(implementation = SolicitudConUsuarioDTO.class))),
+        @ApiResponse(responseCode = "200", description = "Solicitudes con clientes obtenidas correctamente",
+            content = @Content(schema = @Schema(implementation = SolicitudConUsuarioDTO.class))),
         @ApiResponse(responseCode = "500", description = "Error al obtener los datos de usuario")
     })
     @GetMapping("/detalle-clientes")

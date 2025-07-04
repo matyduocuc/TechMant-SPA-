@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" 
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 
+                             https://maven.apache.org/xsd/maven-4.0.0.xsd">
+
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
@@ -13,7 +16,7 @@
     <groupId>com.example</groupId>
     <artifactId>techmant-usuarios</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>techmant-usuarios</name>
+    <name>techmant-usuarios</name>E
     <description>Usuarios y Roles</description>
     <url/>
 
@@ -22,7 +25,7 @@
     </properties>
 
     <dependencies>
-        <!-- Dependencias básicas de Spring Boot -->
+        <!-- Spring Boot básicos -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
@@ -41,17 +44,12 @@
             <artifactId>lombok</artifactId>
             <optional>true</optional>
         </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
-        </dependency>
 
-        <!-- Swagger UI y Springdoc OpenAPI -->
+        <!-- Swagger / OpenAPI -->
         <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-            <version>2.8.9</version> <!-- Verifica la última versión disponible -->
+            <version>2.8.9</version>
         </dependency>
 
         <!-- HATEOAS -->
@@ -60,7 +58,12 @@
             <artifactId>spring-boot-starter-hateoas</artifactId>
         </dependency>
 
-        <!-- Agregar Mockito para pruebas unitarias -->
+        <!-- Testing -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
@@ -68,17 +71,20 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- Agregar MockMvc para pruebas de controladores -->
+        <!-- 🔐 Seguridad: Encriptar contraseñas con BCrypt -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-crypto</artifactId>
         </dependency>
     </dependencies>
 
     <build>
         <plugins>
-            <!-- Plugin para configurar la compilación con Lombok -->
+            <!-- Lombok -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -92,7 +98,7 @@
                 </configuration>
             </plugin>
 
-            <!-- Plugin para empaquetar la aplicación en un archivo .jar con Spring Boot -->
+            <!-- Spring Boot -->
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
@@ -107,4 +113,5 @@
             </plugin>
         </plugins>
     </build>
+
 </project>

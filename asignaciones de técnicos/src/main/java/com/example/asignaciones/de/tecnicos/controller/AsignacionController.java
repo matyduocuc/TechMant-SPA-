@@ -1,4 +1,5 @@
 package com.example.asignaciones.de.tecnicos.controller;
+
 import com.example.asignaciones.de.tecnicos.model.Asignacion;
 import com.example.asignaciones.de.tecnicos.services.AsignacionService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -21,20 +22,22 @@ public class AsignacionController {
 
     @Operation(summary = "Asignar un técnico a una solicitud")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Asignación realizada con éxito", 
-                     content = @Content(schema = @Schema(implementation = Asignacion.class))),
+        @ApiResponse(responseCode = "201", description = "Asignación realizada con éxito",
+            content = @Content(schema = @Schema(implementation = Asignacion.class))),
         @ApiResponse(responseCode = "400", description = "Solicitud incorrecta o no válida"),
         @ApiResponse(responseCode = "404", description = "Técnico o solicitud no encontrada")
     })
     @PostMapping
-    public Asignacion asignar(@RequestBody Asignacion asignacion) {
-        return service.asignar(asignacion);
+    public ResponseEntity<Asignacion> asignar(@RequestBody Asignacion asignacion) {
+        Asignacion creada = service.asignar(asignacion);
+        return ResponseEntity.status(201).body(creada);
     }
 
     @Operation(summary = "Obtener una lista de todas las asignaciones de técnicos")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Lista de asignaciones de técnicos encontrada", 
-                     content = @Content(schema = @Schema(implementation = Asignacion.class)))
+        @ApiResponse(responseCode = "200", description = "Lista de asignaciones obtenida correctamente",
+            content = @Content(schema = @Schema(implementation = Asignacion.class))),
+        @ApiResponse(responseCode = "204", description = "No hay asignaciones")
     })
     @GetMapping
     public List<Asignacion> listar() {
@@ -43,8 +46,8 @@ public class AsignacionController {
 
     @Operation(summary = "Obtener asignación de técnico por ID")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Asignación encontrada", 
-                     content = @Content(schema = @Schema(implementation = Asignacion.class))),
+        @ApiResponse(responseCode = "200", description = "Asignación encontrada",
+            content = @Content(schema = @Schema(implementation = Asignacion.class))),
         @ApiResponse(responseCode = "404", description = "Asignación no encontrada")
     })
     @GetMapping("/{id}")
@@ -56,15 +59,16 @@ public class AsignacionController {
 
     @Operation(summary = "Actualizar asignación de técnico")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Asignación actualizada con éxito", 
-                     content = @Content(schema = @Schema(implementation = Asignacion.class))),
+        @ApiResponse(responseCode = "200", description = "Asignación actualizada con éxito",
+            content = @Content(schema = @Schema(implementation = Asignacion.class))),
+        @ApiResponse(responseCode = "400", description = "Datos inválidos"),
         @ApiResponse(responseCode = "404", description = "Asignación no encontrada")
     })
     @PutMapping("/{id}")
     public ResponseEntity<Asignacion> actualizar(@PathVariable Long id, @RequestBody Asignacion datosActualizados) {
         return service.actualizar(id, datosActualizados)
                 .map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @Operation(summary = "Eliminar asignación de técnico por ID")

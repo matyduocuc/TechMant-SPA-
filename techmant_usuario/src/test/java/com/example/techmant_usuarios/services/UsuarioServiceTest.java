@@ -1,4 +1,4 @@
-    package com.example.techmant_usuarios.services;
+package com.example.techmant_usuarios.services;
 
 import com.example.techmant_usuarios.DTOs.UsuarioRequestDTO;
 import com.example.techmant_usuarios.DTOs.UsuarioResponseDTO;
@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.util.List;
 import java.util.Optional;
@@ -27,6 +28,9 @@ public class UsuarioServiceTest {
     @Mock
     private RolRepository rolRepository;
 
+    @Mock
+    private BCryptPasswordEncoder passwordEncoder;
+
     @InjectMocks
     private UsuarioService usuarioService;
 
@@ -39,9 +43,10 @@ public class UsuarioServiceTest {
     public void testRegistrarUsuario() {
         UsuarioRequestDTO usuarioRequestDTO = new UsuarioRequestDTO("Juan", "juan@mail.com", "password", "ADMIN");
         Rol rol = new Rol(1L, "ADMIN");
-        Usuario usuario = new Usuario(1L, "Juan", "juan@mail.com", "password", rol);
+        Usuario usuario = new Usuario(1L, "Juan", "juan@mail.com", "encodedPassword", rol);
 
         when(rolRepository.findByNombre("ADMIN")).thenReturn(Optional.of(rol));
+        when(passwordEncoder.encode("password")).thenReturn("encodedPassword");
         when(usuarioRepository.save(any(Usuario.class))).thenReturn(usuario);
 
         UsuarioResponseDTO result = usuarioService.registrar(usuarioRequestDTO);
@@ -57,9 +62,10 @@ public class UsuarioServiceTest {
         String contrasena = "password";
 
         Rol rol = new Rol(1L, "ADMIN");
-        Usuario usuario = new Usuario(1L, "Juan", correo, contrasena, rol);
+        Usuario usuario = new Usuario(1L, "Juan", correo, "encodedPassword", rol);
 
         when(usuarioRepository.findByCorreo(correo)).thenReturn(Optional.of(usuario));
+        when(passwordEncoder.matches(contrasena, "encodedPassword")).thenReturn(true);
 
         UsuarioResponseDTO result = usuarioService.login(correo, contrasena);
 
@@ -77,6 +83,7 @@ public class UsuarioServiceTest {
         Usuario usuario = new Usuario(1L, "Juan", correo, "otraClave", rol);
 
         when(usuarioRepository.findByCorreo(correo)).thenReturn(Optional.of(usuario));
+        when(passwordEncoder.matches(contrasena, "otraClave")).thenReturn(false);
 
         Exception ex = assertThrows(RuntimeException.class, () -> {
             usuarioService.login(correo, contrasena);
@@ -108,6 +115,7 @@ public class UsuarioServiceTest {
 
         when(usuarioRepository.findById(id)).thenReturn(Optional.of(usuario));
         when(rolRepository.findByNombre("CLIENTE")).thenReturn(Optional.of(rol));
+        when(passwordEncoder.encode("newpassword")).thenReturn("encodedNewPassword");
         when(usuarioRepository.save(any(Usuario.class))).thenReturn(usuario);
 
         UsuarioResponseDTO result = usuarioService.actualizarUsuario(id, dto);

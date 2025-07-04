@@ -26,7 +26,10 @@ public class EquipoController {
 
     @Operation(summary = "Obtener una lista de todos los equipos")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Lista de equipos encontrada", content = @Content(schema = @Schema(implementation = Equipo.class)))
+        @ApiResponse(responseCode = "200", description = "Lista de equipos encontrada",
+            content = @Content(schema = @Schema(implementation = Equipo.class))),
+        @ApiResponse(responseCode = "204", description = "No hay equipos disponibles"),
+        @ApiResponse(responseCode = "500", description = "Error interno del servidor")
     })
     @GetMapping
     public List<Equipo> listar() {
@@ -35,18 +38,20 @@ public class EquipoController {
 
     @Operation(summary = "Crear un nuevo equipo")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Equipo creado con éxito", content = @Content(schema = @Schema(implementation = Equipo.class))),
+        @ApiResponse(responseCode = "201", description = "Equipo creado con éxito",
+            content = @Content(schema = @Schema(implementation = Equipo.class))),
         @ApiResponse(responseCode = "400", description = "Error en los datos proporcionados")
     })
     @PostMapping
     public ResponseEntity<Equipo> crear(@Valid @RequestBody Equipo equipo) {
         Equipo nuevoEquipo = servicio.guardar(equipo);
-        return ResponseEntity.ok(nuevoEquipo);
+        return ResponseEntity.status(201).body(nuevoEquipo);
     }
-    
+
     @Operation(summary = "Obtener un equipo por su ID")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Equipo encontrado", content = @Content(schema = @Schema(implementation = Equipo.class))),
+        @ApiResponse(responseCode = "200", description = "Equipo encontrado",
+            content = @Content(schema = @Schema(implementation = Equipo.class))),
         @ApiResponse(responseCode = "404", description = "Equipo no encontrado")
     })
     @GetMapping("/{id}")
@@ -55,10 +60,12 @@ public class EquipoController {
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
-    
+
     @Operation(summary = "Actualizar los detalles de un equipo")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Equipo actualizado exitosamente", content = @Content(schema = @Schema(implementation = Equipo.class))),
+        @ApiResponse(responseCode = "200", description = "Equipo actualizado exitosamente",
+            content = @Content(schema = @Schema(implementation = Equipo.class))),
+        @ApiResponse(responseCode = "400", description = "Datos inválidos"),
         @ApiResponse(responseCode = "404", description = "Equipo no encontrado")
     })
     @PutMapping("/{id}")

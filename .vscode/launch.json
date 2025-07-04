@@ -2,6 +2,27 @@
     "configurations": [
         {
             "type": "java",
+            "name": "AsignacionesDeTecnicosApplication",
+            "request": "launch",
+            "mainClass": "com.example.asignaciones.de.tecnicos.AsignacionesDeTecnicosApplication",
+            "projectName": "gestion_de_servicios"
+        },
+        {
+            "type": "java",
+            "name": "GestionDeTicketApplication",
+            "request": "launch",
+            "mainClass": "com.example.Gestion_de_ticket.GestionDeTicketApplication",
+            "projectName": "Gestion_de_ticket"
+        },
+        {
+            "type": "java",
+            "name": "GestionServiciosTecnicosApplication",
+            "request": "launch",
+            "mainClass": "com.example.gestion_servicios_tecnicos.GestionServiciosTecnicosApplication",
+            "projectName": "gestion-servicios-tecnicos"
+        },
+        {
+            "type": "java",
             "name": "GestionDeVentasApplication",
             "request": "launch",
             "mainClass": "com.example.gestion_de_ventas.GestionDeVentasApplication",

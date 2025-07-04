@@ -29,24 +29,31 @@ public class UsuarioController {
     //       POST
     // ======================
 
-    @Operation(summary = "Registrar un nuevo usuario",
-               description = "Este endpoint permite registrar un nuevo usuario en el sistema.")
+    @Operation(
+        summary = "Registrar un nuevo usuario",
+        description = "Permite registrar un nuevo usuario en el sistema."
+    )
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Usuario registrado correctamente",
-                     content = @Content(schema = @Schema(implementation = UsuarioResponseDTO.class))),
-        @ApiResponse(responseCode = "400", description = "Datos inválidos")
+        @ApiResponse(responseCode = "201", description = "Usuario registrado correctamente",
+            content = @Content(schema = @Schema(implementation = UsuarioResponseDTO.class))),
+        @ApiResponse(responseCode = "400", description = "Datos inválidos o correo duplicado"),
+        @ApiResponse(responseCode = "500", description = "Error interno del servidor")
     })
     @PostMapping("/registrar")
-    public UsuarioResponseDTO registrarUsuario(@RequestBody UsuarioRequestDTO usuarioRequestDTO) {
-        return usuarioService.registrar(usuarioRequestDTO);
+    public ResponseEntity<UsuarioResponseDTO> registrarUsuario(@RequestBody UsuarioRequestDTO usuarioRequestDTO) {
+        UsuarioResponseDTO registrado = usuarioService.registrar(usuarioRequestDTO);
+        return ResponseEntity.status(201).body(registrado);
     }
 
-    @Operation(summary = "Login de un usuario",
-               description = "Este endpoint permite realizar el login de un usuario utilizando su correo y contraseña.")
+    @Operation(
+        summary = "Login de un usuario",
+        description = "Autentica a un usuario por correo y contraseña."
+    )
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Login exitoso",
-                     content = @Content(schema = @Schema(implementation = UsuarioResponseDTO.class))),
-        @ApiResponse(responseCode = "400", description = "Correo o contraseña incorrectos")
+            content = @Content(schema = @Schema(implementation = UsuarioResponseDTO.class))),
+        @ApiResponse(responseCode = "400", description = "Correo o contraseña incorrectos"),
+        @ApiResponse(responseCode = "500", description = "Error interno del servidor")
     })
     @PostMapping("/login")
     public UsuarioResponseDTO login(@RequestBody UsuarioRequestDTO usuarioRequestDTO) {
@@ -57,22 +64,25 @@ public class UsuarioController {
     //        GET
     // ======================
 
-    @Operation(summary = "Obtener todos los usuarios",
-               description = "Este endpoint permite obtener la lista de todos los usuarios registrados en el sistema.")
+    @Operation(summary = "Obtener todos los usuarios")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Lista de usuarios obtenida correctamente",
-                     content = @Content(schema = @Schema(implementation = UsuarioResponseDTO.class)))
+        @ApiResponse(responseCode = "200", description = "Lista obtenida correctamente",
+            content = @Content(schema = @Schema(implementation = UsuarioResponseDTO.class))),
+        @ApiResponse(responseCode = "204", description = "No hay usuarios registrados"),
+        @ApiResponse(responseCode = "500", description = "Error interno del servidor")
     })
     @GetMapping
-    public List<UsuarioResponseDTO> obtenerUsuarios() {
-        return usuarioService.obtenerUsuarios();
+    public ResponseEntity<List<UsuarioResponseDTO>> obtenerUsuarios() {
+        List<UsuarioResponseDTO> lista = usuarioService.obtenerUsuarios();
+        return lista.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(lista);
     }
 
-    @Operation(summary = "Obtener un usuario por ID",
-               description = "Devuelve un usuario específico por su ID.")
+    @Operation(summary = "Obtener un usuario por ID")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Usuario encontrado"),
-        @ApiResponse(responseCode = "404", description = "Usuario no encontrado")
+        @ApiResponse(responseCode = "200", description = "Usuario encontrado",
+            content = @Content(schema = @Schema(implementation = UsuarioResponseDTO.class))),
+        @ApiResponse(responseCode = "404", description = "Usuario no encontrado"),
+        @ApiResponse(responseCode = "500", description = "Error interno del servidor")
     })
     @GetMapping("/{id}")
     public ResponseEntity<UsuarioResponseDTO> obtenerPorId(@PathVariable Long id) {
@@ -85,13 +95,13 @@ public class UsuarioController {
     //        PUT
     // ======================
 
-    @Operation(summary = "Actualizar un usuario",
-               description = "Este endpoint permite actualizar los detalles de un usuario.")
+    @Operation(summary = "Actualizar un usuario")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Usuario actualizado correctamente",
-                     content = @Content(schema = @Schema(implementation = UsuarioResponseDTO.class))),
+            content = @Content(schema = @Schema(implementation = UsuarioResponseDTO.class))),
         @ApiResponse(responseCode = "400", description = "Datos inválidos"),
-        @ApiResponse(responseCode = "404", description = "Usuario no encontrado")
+        @ApiResponse(responseCode = "404", description = "Usuario no encontrado"),
+        @ApiResponse(responseCode = "500", description = "Error interno del servidor")
     })
     @PutMapping("/{id}")
     public UsuarioResponseDTO actualizarUsuario(@PathVariable Long id, @RequestBody UsuarioRequestDTO usuarioRequestDTO) {
@@ -102,14 +112,15 @@ public class UsuarioController {
     //       DELETE
     // ======================
 
-    @Operation(summary = "Eliminar un usuario",
-               description = "Este endpoint permite eliminar un usuario del sistema.")
+    @Operation(summary = "Eliminar un usuario")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Usuario eliminado correctamente"),
-        @ApiResponse(responseCode = "404", description = "Usuario no encontrado")
+        @ApiResponse(responseCode = "204", description = "Usuario eliminado correctamente"),
+        @ApiResponse(responseCode = "404", description = "Usuario no encontrado"),
+        @ApiResponse(responseCode = "500", description = "Error interno del servidor")
     })
     @DeleteMapping("/{id}")
-    public void eliminarUsuario(@PathVariable Long id) {
+    public ResponseEntity<Void> eliminarUsuario(@PathVariable Long id) {
         usuarioService.eliminarUsuario(id);
+        return ResponseEntity.noContent().build();
     }
 }

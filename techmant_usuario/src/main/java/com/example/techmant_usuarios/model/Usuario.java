@@ -1,32 +1,33 @@
 package com.example.techmant_usuarios.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import jakarta.persistence.*;
+import lombok.*;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 @Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "usuarios")
+@Schema(description = "Entidad que representa a un usuario del sistema.")
 public class Usuario {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Schema(description = "ID único del usuario", example = "10")
     private Long id;
 
+    @Schema(description = "Nombre completo del usuario", example = "Juan Pérez")
     private String nombre;
+
+    @Schema(description = "Correo electrónico del usuario", example = "juan@mail.com")
     private String correo;
+
+    @Schema(description = "Contraseña encriptada del usuario", example = "$2a$10$abc123")
     private String contrasena;
 
     @ManyToOne
     @JoinColumn(name = "rol_id")
+    @Schema(description = "Rol asignado al usuario")
     private Rol rol;
 }
