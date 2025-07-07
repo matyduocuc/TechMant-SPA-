@@ -9,6 +9,6 @@ public class SeguridadConfig {
 
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+        return new BCryptPasswordEncoder();  // Usamos BCrypt para encriptar las contraseñas
     }
 }
