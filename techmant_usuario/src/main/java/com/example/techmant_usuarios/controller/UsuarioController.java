@@ -47,7 +47,7 @@ public class UsuarioController {
 
     @Operation(
         summary = "Login de un usuario",
-        description = "Autentica a un usuario por correo y contraseña."
+        description = "Autentica a un usuario por correo y contraseña y devuelve un token JWT."
     )
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Login exitoso",
@@ -56,8 +56,10 @@ public class UsuarioController {
         @ApiResponse(responseCode = "500", description = "Error interno del servidor")
     })
     @PostMapping("/login")
-    public UsuarioResponseDTO login(@RequestBody UsuarioRequestDTO usuarioRequestDTO) {
-        return usuarioService.login(usuarioRequestDTO.getCorreo(), usuarioRequestDTO.getContrasena());
+    public ResponseEntity<String> login(@RequestBody UsuarioRequestDTO usuarioRequestDTO) {
+        // Aquí, deberías implementar la lógica para autenticar al usuario y devolver un JWT.
+        String token = usuarioService.login(usuarioRequestDTO.getCorreo(), usuarioRequestDTO.getContrasena());
+        return ResponseEntity.ok(token);
     }
 
     // ======================
@@ -68,6 +70,7 @@ public class UsuarioController {
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Lista obtenida correctamente",
             content = @Content(schema = @Schema(implementation = UsuarioResponseDTO.class))),
+
         @ApiResponse(responseCode = "204", description = "No hay usuarios registrados"),
         @ApiResponse(responseCode = "500", description = "Error interno del servidor")
     })
@@ -81,6 +84,7 @@ public class UsuarioController {
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Usuario encontrado",
             content = @Content(schema = @Schema(implementation = UsuarioResponseDTO.class))),
+
         @ApiResponse(responseCode = "404", description = "Usuario no encontrado"),
         @ApiResponse(responseCode = "500", description = "Error interno del servidor")
     })
@@ -99,6 +103,7 @@ public class UsuarioController {
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Usuario actualizado correctamente",
             content = @Content(schema = @Schema(implementation = UsuarioResponseDTO.class))),
+
         @ApiResponse(responseCode = "400", description = "Datos inválidos"),
         @ApiResponse(responseCode = "404", description = "Usuario no encontrado"),
         @ApiResponse(responseCode = "500", description = "Error interno del servidor")
@@ -124,3 +129,4 @@ public class UsuarioController {
         return ResponseEntity.noContent().build();
     }
 }
+

@@ -1,10 +1,8 @@
 package com.example.techmant_usuarios.controller;
 
-
 import com.example.techmant_usuarios.DTOs.UsuarioRequestDTO;
 import com.example.techmant_usuarios.DTOs.UsuarioResponseDTO;
 import com.example.techmant_usuarios.services.UsuarioService;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -37,13 +35,16 @@ public class UsuarioControllerTest {
         mockMvc = MockMvcBuilders.standaloneSetup(usuarioController).build();
     }
 
+    // Test de Registro de Usuario
     @Test
     void testRegistrarUsuario() throws Exception {
         UsuarioRequestDTO request = new UsuarioRequestDTO("Juan", "juan@mail.com", "password", "ADMIN");
         UsuarioResponseDTO response = new UsuarioResponseDTO(1L, "Juan", "juan@mail.com", "ADMIN");
 
-        when(usuarioService.registrar(any())).thenReturn(response);
+        // Simulamos la respuesta del servicio
+        when(usuarioService.registrar(any(UsuarioRequestDTO.class))).thenReturn(response);
 
+        // Ejecutamos el test con la solicitud POST para registrar usuario
         mockMvc.perform(post("/usuarios/registrar")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("""
@@ -54,18 +55,17 @@ public class UsuarioControllerTest {
                           "rol": "ADMIN"
                         }
                         """))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.nombre").value("Juan"))
+                .andExpect(status().isCreated())  // Cambié isOk() por isCreated()
+                .andExpect(jsonPath("$.nombre").value("Juan"))  // Verificamos que el nombre sea correcto
                 .andExpect(jsonPath("$.correo").value("juan@mail.com"))
                 .andExpect(jsonPath("$.rol").value("ADMIN"));
     }
 
+    // Test de Login de Usuario
     @Test
     void testLoginUsuario() throws Exception {
-        UsuarioRequestDTO request = new UsuarioRequestDTO("Juan", "juan@mail.com", "password", "ADMIN");
-        UsuarioResponseDTO response = new UsuarioResponseDTO(1L, "Juan", "juan@mail.com", "ADMIN");
-
-        when(usuarioService.login(eq("juan@mail.com"), eq("password"))).thenReturn(response);
+        // Datos de prueba
+        when(usuarioService.login(eq("juan@mail.com"), eq("password"))).thenReturn("jwt_token_example");
 
         mockMvc.perform(post("/usuarios/login")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -75,21 +75,23 @@ public class UsuarioControllerTest {
                           "contrasena": "password"
                         }
                         """))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.correo").value("juan@mail.com"))
-                .andExpect(jsonPath("$.rol").value("ADMIN"));
+                .andExpect(status().isOk())  // Verificamos el código 200
+                .andExpect(jsonPath("$").value("jwt_token_example"));  // Verificamos el token JWT
     }
 
+    // Test de Obtener Todos los Usuarios
     @Test
     void testObtenerTodosLosUsuarios() throws Exception {
         UsuarioResponseDTO usuario = new UsuarioResponseDTO(1L, "Juan", "juan@mail.com", "ADMIN");
+
         when(usuarioService.obtenerUsuarios()).thenReturn(List.of(usuario));
 
         mockMvc.perform(get("/usuarios"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].nombre").value("Juan"));
+                .andExpect(status().isOk())  // Verificamos que el estado sea 200 OK
+                .andExpect(jsonPath("$[0].nombre").value("Juan"));  // Verificamos que el nombre sea correcto
     }
 
+    // Test de Obtener Usuario por ID
     @Test
     void testObtenerUsuarioPorId() throws Exception {
         UsuarioResponseDTO response = new UsuarioResponseDTO(1L, "Juan", "juan@mail.com", "ADMIN");
@@ -97,16 +99,18 @@ public class UsuarioControllerTest {
         when(usuarioService.obtenerPorId(1L)).thenReturn(Optional.of(response));
 
         mockMvc.perform(get("/usuarios/1"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.nombre").value("Juan"));
+                .andExpect(status().isOk())  // Verificamos que el estado sea 200 OK
+                .andExpect(jsonPath("$.nombre").value("Juan"))  // Verificamos que el nombre sea correcto
+                .andExpect(jsonPath("$.rol").value("ADMIN"));
     }
 
+    // Test de Actualización de Usuario
     @Test
     void testActualizarUsuario() throws Exception {
         UsuarioRequestDTO request = new UsuarioRequestDTO("Juan Updated", "juan@mail.com", "newpass", "CLIENTE");
         UsuarioResponseDTO response = new UsuarioResponseDTO(1L, "Juan Updated", "juan@mail.com", "CLIENTE");
 
-        when(usuarioService.actualizarUsuario(eq(1L), any())).thenReturn(response);
+        when(usuarioService.actualizarUsuario(eq(1L), any(UsuarioRequestDTO.class))).thenReturn(response);
 
         mockMvc.perform(put("/usuarios/1")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -118,16 +122,17 @@ public class UsuarioControllerTest {
                           "rol": "CLIENTE"
                         }
                         """))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.nombre").value("Juan Updated"))
+                .andExpect(status().isOk())  // Verificamos que el estado sea 200 OK
+                .andExpect(jsonPath("$.nombre").value("Juan Updated"))  // Verificamos que el nombre sea actualizado
                 .andExpect(jsonPath("$.rol").value("CLIENTE"));
     }
 
+    // Test de Eliminar Usuario
     @Test
     void testEliminarUsuario() throws Exception {
         doNothing().when(usuarioService).eliminarUsuario(1L);
 
         mockMvc.perform(delete("/usuarios/1"))
-                .andExpect(status().isOk());
+                .andExpect(status().isNoContent());  // Verificamos que el estado sea 204 No Content
     }
 }

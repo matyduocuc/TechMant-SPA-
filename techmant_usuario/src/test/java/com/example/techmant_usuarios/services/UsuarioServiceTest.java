@@ -6,7 +6,7 @@ import com.example.techmant_usuarios.model.Rol;
 import com.example.techmant_usuarios.model.Usuario;
 import com.example.techmant_usuarios.repository.RolRepository;
 import com.example.techmant_usuarios.repository.UsuarioRepository;
-
+import com.example.techmant_usuarios.util.JwtUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -30,6 +30,9 @@ public class UsuarioServiceTest {
 
     @Mock
     private BCryptPasswordEncoder passwordEncoder;
+
+    @Mock
+    private JwtUtil jwtUtil;  // Agregado para inyectar JwtUtil
 
     @InjectMocks
     private UsuarioService usuarioService;
@@ -66,12 +69,11 @@ public class UsuarioServiceTest {
 
         when(usuarioRepository.findByCorreo(correo)).thenReturn(Optional.of(usuario));
         when(passwordEncoder.matches(contrasena, "encodedPassword")).thenReturn(true);
+        when(jwtUtil.generateToken(correo)).thenReturn("jwt_token_example");  // Mock del token JWT
 
-        UsuarioResponseDTO result = usuarioService.login(correo, contrasena);
+        String token = usuarioService.login(correo, contrasena);
 
-        assertEquals("Juan", result.getNombre());
-        assertEquals("juan@mail.com", result.getCorreo());
-        assertEquals("ADMIN", result.getRol());
+        assertEquals("jwt_token_example", token);  // Verificamos que el token sea generado
     }
 
     @Test
@@ -133,7 +135,7 @@ public class UsuarioServiceTest {
 
         usuarioService.eliminarUsuario(id);
 
-        verify(usuarioRepository, times(1)).delete(usuario);
+        verify(usuarioRepository, times(1)).delete(usuario);  // Verificamos que el usuario sea eliminado
     }
 
     @Test
