@@ -63,7 +63,7 @@ class RepuestoControllerTest {
         mockMvc.perform(post("/api/repuestos")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(mapper.writeValueAsString(repuesto)))
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated()) // Cambiado a 201 Created
                 .andExpect(jsonPath("$.id").value(1));
     }
 
@@ -98,6 +98,4 @@ class RepuestoControllerTest {
         mockMvc.perform(delete("/api/repuestos/1"))
                 .andExpect(status().isNoContent());
     }
-
-
 }

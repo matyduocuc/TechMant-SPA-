@@ -1,4 +1,4 @@
-package com.example.Gestion_de_ticket.controller;
+package com.example.Gestion_de_ticket.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

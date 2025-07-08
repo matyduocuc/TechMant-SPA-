@@ -1,6 +1,5 @@
 package com.example.gestion_servicios_tecnicos.controller;
 
-
 import com.example.gestion_servicios_tecnicos.model.ServicioTecnico;
 import com.example.gestion_servicios_tecnicos.services.ServicioTecnicoService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -51,7 +50,7 @@ class ServicioTecnicoControllerTest {
         mockMvc.perform(post("/api/servicios-tecnicos")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(mapper.writeValueAsString(st)))
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated()) // Esperamos el código 201 Created
                 .andExpect(jsonPath("$.id").value(1));
     }
 
@@ -109,4 +108,3 @@ class ServicioTecnicoControllerTest {
                 .andExpect(status().isOk());
     }
 }
-

@@ -43,7 +43,7 @@ public class AsignacionControllerTest {
         mockMvc.perform(post("/api/asignaciones")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(a)))
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated())  // Cambié a isCreated()
                 .andExpect(jsonPath("$.id").value(1L));
     }
 

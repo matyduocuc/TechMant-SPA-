@@ -56,7 +56,7 @@ class VentaControllerTest {
         mockMvc.perform(post("/api/ventas")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(mapper.writeValueAsString(nueva)))
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated())  // Cambiado de .isOk() a .isCreated() para esperar el código 201
                 .andExpect(jsonPath("$.id").value(1));
     }
 

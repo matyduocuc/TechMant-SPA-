@@ -42,7 +42,6 @@ public class TicketUsuarioService {
                             URL_USUARIOS + "/" + ticket.getIdUsuario(), UsuarioResponseDTO.class);
                     map.put("usuario", usuario);
                 } catch (RestClientException ex) {
-                    // En caso de error, registra mensaje claro y continúa
                     map.put("usuario", "No disponible (error al consultar usuario: " + ex.getMessage() + ")");
                 }
             } else {

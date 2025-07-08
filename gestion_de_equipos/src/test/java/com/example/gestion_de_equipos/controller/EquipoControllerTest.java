@@ -34,12 +34,12 @@ public class EquipoControllerTest {
     @Test
     public void testCrearEquipo() throws Exception {
         Equipo equipo = new Equipo(null, "Equipo A", "Marca A", "Modelo A", "Tipo A", "Descripción A");
-        when(equipoService.guardar(equipo)).thenReturn(equipo);
+        when(equipoService.guardar(equipo)).thenReturn(new Equipo(1L, "Equipo A", "Marca A", "Modelo A", "Tipo A", "Descripción A"));
 
         mockMvc.perform(post("/api/equipos")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{\"nombre\":\"Equipo A\",\"marca\":\"Marca A\",\"modelo\":\"Modelo A\",\"tipo\":\"Tipo A\",\"descripcion\":\"Descripción A\"}"))
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated())  // Esperamos el código de estado 201 Created
                 .andExpect(jsonPath("$.nombre").value("Equipo A"))
                 .andExpect(jsonPath("$.marca").value("Marca A"));
 
