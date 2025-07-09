@@ -32,34 +32,33 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
         final String authHeader = request.getHeader("Authorization");
 
-        // Si no hay encabezado de autorización o no empieza con "Bearer ", pasamos al siguiente filtro
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        // Extraemos el token JWT del encabezado
-        final String jwt = authHeader.substring(7);  // Eliminamos el prefijo "Bearer "
+        final String jwt = authHeader.substring(7);  // Eliminamos "Bearer "
         final String correo = jwtUtil.extractUsername(jwt);  // Extraemos el correo del token
 
-        // Verificamos si el correo no es nulo y si el usuario no está autenticado
         if (correo != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            // Buscamos al usuario en la base de datos
             Usuario usuario = usuarioRepository.findByCorreo(correo).orElse(null);
 
-            // Si el usuario existe y el token es válido
             if (usuario != null && jwtUtil.isTokenValid(jwt)) {
-                // Crear el token de autenticación con los detalles del usuario
-                UsernamePasswordAuthenticationToken authToken =
-                        new UsernamePasswordAuthenticationToken(usuario, null, Collections.emptyList());
-                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));  // Establecer los detalles de la solicitud
+                // Verificar que el rol sea ADMIN
+                String rol = jwtUtil.extractRole(jwt);  // Asegúrate de que el rol se extraiga correctamente
+                if ("ADMIN".equals(rol)) {
+                    UsernamePasswordAuthenticationToken authToken =
+                            new UsernamePasswordAuthenticationToken(usuario, null, Collections.emptyList());
+                    authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
-                // Establecemos la autenticación en el contexto de seguridad de Spring
-                SecurityContextHolder.getContext().setAuthentication(authToken);
+                    SecurityContextHolder.getContext().setAuthentication(authToken);
+                } else {
+                    response.sendError(HttpServletResponse.SC_FORBIDDEN, "No tienes permisos suficientes");
+                    return;
+                }
             }
         }
 
-        // Pasamos la solicitud al siguiente filtro en la cadena
         filterChain.doFilter(request, response);
     }
 }

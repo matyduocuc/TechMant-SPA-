@@ -48,7 +48,8 @@ public class SecurityConfig {
                     "/v3/api-docs/**",
                     "/swagger-ui.html",
                     "/swagger-resources/**",
-                    "/webjars/**"
+                    "/webjars/**",
+                    "/usuarios/registrar"  // Permitir el acceso a la ruta de registro de usuario
                 ).permitAll()  // Estas rutas no requieren autenticación
                 .anyRequest().authenticated()  // El resto de las rutas requieren autenticación
             .and()

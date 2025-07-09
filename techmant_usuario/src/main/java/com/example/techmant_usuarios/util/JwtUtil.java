@@ -22,10 +22,11 @@ public class JwtUtil {
         return Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
     }
 
-    // Genera un token con el correo del usuario
-    public String generateToken(String correo) {
+    // Genera un token con el correo del usuario y el rol
+    public String generateToken(String correo, String rol) {
         return Jwts.builder()
                 .setSubject(correo)
+                .claim("role", rol)  // Añadir el rol al token
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)
@@ -40,6 +41,16 @@ public class JwtUtil {
                 .parseClaimsJws(token)
                 .getBody()
                 .getSubject();
+    }
+
+    // Extrae el rol desde el token
+    public String extractRole(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(getSigningKey())
+                .build()
+                .parseClaimsJws(token)
+                .getBody()
+                .get("role", String.class);  // Extraer el rol desde las reclamaciones
     }
 
     // Valida si el token es correcto y no ha expirado

@@ -1,19 +1,17 @@
 package com.example.techmant_usuarios.controller;
 
-import java.util.List;
-
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
 import com.example.techmant_usuarios.DTOs.UsuarioRequestDTO;
 import com.example.techmant_usuarios.DTOs.UsuarioResponseDTO;
 import com.example.techmant_usuarios.services.UsuarioService;
-
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/usuarios")
@@ -21,17 +19,18 @@ public class UsuarioController {
 
     private final UsuarioService usuarioService;
 
+    // Constructor de inyección de dependencias
     public UsuarioController(UsuarioService usuarioService) {
         this.usuarioService = usuarioService;
     }
 
-    // ======================
+    // ==========================
     //       POST
-    // ======================
-
+    // ==========================
+    
     @Operation(
         summary = "Registrar un nuevo usuario",
-        description = "Permite registrar un nuevo usuario en el sistema."
+        description = "Permite registrar un nuevo usuario en el sistema. Solo accesible para ADMIN."
     )
     @ApiResponses(value = {
         @ApiResponse(responseCode = "201", description = "Usuario registrado correctamente",
@@ -57,15 +56,14 @@ public class UsuarioController {
     })
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody UsuarioRequestDTO usuarioRequestDTO) {
-        // Aquí, deberías implementar la lógica para autenticar al usuario y devolver un JWT.
         String token = usuarioService.login(usuarioRequestDTO.getCorreo(), usuarioRequestDTO.getContrasena());
         return ResponseEntity.ok(token);
     }
 
-    // ======================
-    //        GET
-    // ======================
-
+    // ==========================
+    //       GET
+    // ==========================
+    
     @Operation(summary = "Obtener todos los usuarios")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Lista obtenida correctamente",
@@ -95,10 +93,10 @@ public class UsuarioController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    // ======================
-    //        PUT
-    // ======================
-
+    // ==========================
+    //       PUT
+    // ==========================
+    
     @Operation(summary = "Actualizar un usuario")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Usuario actualizado correctamente",
@@ -109,14 +107,14 @@ public class UsuarioController {
         @ApiResponse(responseCode = "500", description = "Error interno del servidor")
     })
     @PutMapping("/{id}")
-    public UsuarioResponseDTO actualizarUsuario(@PathVariable Long id, @RequestBody UsuarioRequestDTO usuarioRequestDTO) {
-        return usuarioService.actualizarUsuario(id, usuarioRequestDTO);
+    public ResponseEntity<UsuarioResponseDTO> actualizarUsuario(@PathVariable Long id, @RequestBody UsuarioRequestDTO usuarioRequestDTO) {
+        return ResponseEntity.ok(usuarioService.actualizarUsuario(id, usuarioRequestDTO));
     }
 
-    // ======================
+    // ==========================
     //       DELETE
-    // ======================
-
+    // ==========================
+    
     @Operation(summary = "Eliminar un usuario")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "204", description = "Usuario eliminado correctamente"),
@@ -129,4 +127,3 @@ public class UsuarioController {
         return ResponseEntity.noContent().build();
     }
 }
-
