@@ -69,7 +69,7 @@ public class UsuarioServiceTest {
 
         when(usuarioRepository.findByCorreo(correo)).thenReturn(Optional.of(usuario));
         when(passwordEncoder.matches(contrasena, "encodedPassword")).thenReturn(true);
-        when(jwtUtil.generateToken(correo)).thenReturn("jwt_token_example");  // Mock del token JWT
+        when(jwtUtil.generateToken(correo, contrasena)).thenReturn("jwt_token_example");  // Mock del token JWT
 
         String token = usuarioService.login(correo, contrasena);
 

@@ -31,18 +31,13 @@ public class AuthController {
     // Login de Usuario
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest request) {
-        // Buscar el usuario en la base de datos por correo
         Usuario usuario = usuarioRepository.findByCorreo(request.getCorreo()).orElse(null);
 
-        // Verificar si el usuario existe y si la contraseña coincide
         if (usuario == null || !passwordEncoder.matches(request.getClave(), usuario.getContrasena())) {
             return ResponseEntity.status(401).body("Credenciales inválidas");
         }
 
-        // Generar el token JWT
         String token = jwtUtil.generateToken(usuario.getCorreo(), usuario.getRol().getNombre());
-        
-        // Retornar el token generado
         return ResponseEntity.ok(new JwtResponse(token));
     }
 
@@ -59,16 +54,11 @@ public class AuthController {
         nuevoUsuario.setCorreo(request.getCorreo());
         nuevoUsuario.setContrasena(passwordEncoder.encode(request.getClave()));  // Encriptar la contraseña
 
-        // Asignar el rol recibido en la solicitud, si no existe asignar el rol ADMIN por defecto
-        String rolNombre = request.getRol();  // Obtener el rol del body
-        if (rolNombre == null || rolNombre.isEmpty()) {
-            rolNombre = "CLIENTE";  // Asignar "CLIENTE" si no se recibe un rol
-        }
-        // Obtener el rol de la base de datos
-        var rol = rolRepository.findByNombre(rolNombre)
+        // Asignar siempre el rol de ADMIN
+        var rol = rolRepository.findByNombre("ADMIN")
                 .orElseThrow(() -> new RuntimeException("Rol no encontrado"));
-
-        nuevoUsuario.setRol(rol);  // Asignar el rol al usuario
+        
+        nuevoUsuario.setRol(rol);  // Asignar el rol ADMIN al usuario
 
         // Guardar el nuevo usuario en la base de datos
         usuarioRepository.save(nuevoUsuario);
