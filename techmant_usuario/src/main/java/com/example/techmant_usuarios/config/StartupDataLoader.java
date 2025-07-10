@@ -20,9 +20,8 @@ public class StartupDataLoader implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        // Verificar si los roles existen
+        // Insertar roles
         if (rolRepository.count() == 0) {
-            // Insertar roles predeterminados si no existen
             Rol adminRol = new Rol(null, "ADMIN");
             Rol clienteRol = new Rol(null, "CLIENTE");
             Rol tecnicoRol = new Rol(null, "TECNICO");
@@ -30,27 +29,22 @@ public class StartupDataLoader implements CommandLineRunner {
             rolRepository.save(adminRol);
             rolRepository.save(clienteRol);
             rolRepository.save(tecnicoRol);
-
-            System.out.println("⚙️ Roles insertados automáticamente.");
         }
 
-        // Verificar si los usuarios existen
+        // Insertar usuarios
         if (usuarioRepository.count() == 0) {
-            // Insertar usuarios predeterminados si no existen
             Usuario adminUsuario = new Usuario();
             adminUsuario.setCorreo("admin@mail.com");
-            adminUsuario.setContrasena("admin123");  // Asegúrate de encriptar la contraseña
+            adminUsuario.setContrasena("admin123"); // Encriptar la contraseña antes de guardar
             adminUsuario.setRol(rolRepository.findByNombre("ADMIN").orElseThrow());
 
             Usuario clienteUsuario = new Usuario();
             clienteUsuario.setCorreo("cliente@mail.com");
-            clienteUsuario.setContrasena("cliente123");  // Asegúrate de encriptar la contraseña
+            clienteUsuario.setContrasena("cliente123"); // Encriptar la contraseña antes de guardar
             clienteUsuario.setRol(rolRepository.findByNombre("CLIENTE").orElseThrow());
 
             usuarioRepository.save(adminUsuario);
             usuarioRepository.save(clienteUsuario);
-
-            System.out.println("⚙️ Usuarios insertados automáticamente.");
         }
     }
 }

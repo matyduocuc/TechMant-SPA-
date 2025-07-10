@@ -11,7 +11,7 @@ public class SwaggerConfig {
     public GroupedOpenApi publicApi() {
         return GroupedOpenApi.builder()
                 .group("public")
-                .pathsToMatch("/usuarios/**")  // Se asegura de que se incluyan las rutas de "/usuarios"
+                .pathsToMatch("/usuarios/**")
                 .build();
     }
 }

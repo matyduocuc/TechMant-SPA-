@@ -19,73 +19,37 @@ public class UsuarioController {
 
     private final UsuarioService usuarioService;
 
-    // Constructor de inyección de dependencias
     public UsuarioController(UsuarioService usuarioService) {
         this.usuarioService = usuarioService;
     }
 
-    // ==========================
-    //       POST
-    // ==========================
-    
-    @Operation(
-        summary = "Registrar un nuevo usuario",
-        description = "Permite registrar un nuevo usuario en el sistema. Solo accesible para ADMIN."
-    )
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "201", description = "Usuario registrado correctamente",
-            content = @Content(schema = @Schema(implementation = UsuarioResponseDTO.class))),
-        @ApiResponse(responseCode = "400", description = "Datos inválidos o correo duplicado"),
-        @ApiResponse(responseCode = "500", description = "Error interno del servidor")
-    })
+    // Método POST para registrar un nuevo usuario
     @PostMapping("/registrar")
+    @Operation(summary = "Registrar un nuevo usuario")
+    @ApiResponses({
+        @ApiResponse(responseCode = "201", description = "Usuario registrado correctamente"),
+        @ApiResponse(responseCode = "400", description = "Correo duplicado o datos inválidos")
+    })
     public ResponseEntity<UsuarioResponseDTO> registrarUsuario(@RequestBody UsuarioRequestDTO usuarioRequestDTO) {
         UsuarioResponseDTO registrado = usuarioService.registrar(usuarioRequestDTO);
         return ResponseEntity.status(201).body(registrado);
     }
 
-    @Operation(
-        summary = "Login de un usuario",
-        description = "Autentica a un usuario por correo y contraseña y devuelve un token JWT."
-    )
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Login exitoso",
-            content = @Content(schema = @Schema(implementation = UsuarioResponseDTO.class))),
-        @ApiResponse(responseCode = "400", description = "Correo o contraseña incorrectos"),
-        @ApiResponse(responseCode = "500", description = "Error interno del servidor")
-    })
+    // Método POST para login de usuario
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody UsuarioRequestDTO usuarioRequestDTO) {
         String token = usuarioService.login(usuarioRequestDTO.getCorreo(), usuarioRequestDTO.getContrasena());
         return ResponseEntity.ok(token);
     }
 
-    // ==========================
-    //       GET
-    // ==========================
-    
-    @Operation(summary = "Obtener todos los usuarios")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Lista obtenida correctamente",
-            content = @Content(schema = @Schema(implementation = UsuarioResponseDTO.class))),
-
-        @ApiResponse(responseCode = "204", description = "No hay usuarios registrados"),
-        @ApiResponse(responseCode = "500", description = "Error interno del servidor")
-    })
+    // Método GET para obtener todos los usuarios
     @GetMapping
     public ResponseEntity<List<UsuarioResponseDTO>> obtenerUsuarios() {
         List<UsuarioResponseDTO> lista = usuarioService.obtenerUsuarios();
         return lista.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(lista);
     }
 
-    @Operation(summary = "Obtener un usuario por ID")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Usuario encontrado",
-            content = @Content(schema = @Schema(implementation = UsuarioResponseDTO.class))),
-
-        @ApiResponse(responseCode = "404", description = "Usuario no encontrado"),
-        @ApiResponse(responseCode = "500", description = "Error interno del servidor")
-    })
+    // Método GET para obtener un usuario por ID
     @GetMapping("/{id}")
     public ResponseEntity<UsuarioResponseDTO> obtenerPorId(@PathVariable Long id) {
         return usuarioService.obtenerPorId(id)
@@ -93,34 +57,13 @@ public class UsuarioController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    // ==========================
-    //       PUT
-    // ==========================
-    
-    @Operation(summary = "Actualizar un usuario")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Usuario actualizado correctamente",
-            content = @Content(schema = @Schema(implementation = UsuarioResponseDTO.class))),
-
-        @ApiResponse(responseCode = "400", description = "Datos inválidos"),
-        @ApiResponse(responseCode = "404", description = "Usuario no encontrado"),
-        @ApiResponse(responseCode = "500", description = "Error interno del servidor")
-    })
+    // Método PUT para actualizar un usuario
     @PutMapping("/{id}")
     public ResponseEntity<UsuarioResponseDTO> actualizarUsuario(@PathVariable Long id, @RequestBody UsuarioRequestDTO usuarioRequestDTO) {
         return ResponseEntity.ok(usuarioService.actualizarUsuario(id, usuarioRequestDTO));
     }
 
-    // ==========================
-    //       DELETE
-    // ==========================
-    
-    @Operation(summary = "Eliminar un usuario")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "204", description = "Usuario eliminado correctamente"),
-        @ApiResponse(responseCode = "404", description = "Usuario no encontrado"),
-        @ApiResponse(responseCode = "500", description = "Error interno del servidor")
-    })
+    // Método DELETE para eliminar un usuario
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminarUsuario(@PathVariable Long id) {
         usuarioService.eliminarUsuario(id);

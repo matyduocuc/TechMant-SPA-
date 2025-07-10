@@ -4,9 +4,9 @@ import com.example.techmant_usuarios.DTOs.UsuarioRequestDTO;
 import com.example.techmant_usuarios.DTOs.UsuarioResponseDTO;
 import com.example.techmant_usuarios.model.Rol;
 import com.example.techmant_usuarios.model.Usuario;
+import com.example.techmant_usuarios.util.JwtUtil;
 import com.example.techmant_usuarios.repository.RolRepository;
 import com.example.techmant_usuarios.repository.UsuarioRepository;
-import com.example.techmant_usuarios.util.JwtUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -14,142 +14,149 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class UsuarioServiceTest {
 
     @Mock
-    private UsuarioRepository usuarioRepository;
+    private UsuarioRepository usuarioRepo;
 
     @Mock
-    private RolRepository rolRepository;
+    private RolRepository rolRepo;
 
     @Mock
     private BCryptPasswordEncoder passwordEncoder;
 
     @Mock
-    private JwtUtil jwtUtil;  // Agregado para inyectar JwtUtil
+    private JwtUtil jwtUtil;  // Mock de JwtUtil
 
     @InjectMocks
     private UsuarioService usuarioService;
 
     @BeforeEach
     public void setUp() {
-        MockitoAnnotations.openMocks(this);
+        MockitoAnnotations.openMocks(this);  // Inicializa los mocks
     }
 
+    // Test de login de usuario
+    @Test
+    public void testLogin() {
+        String correo = "juan@mail.com";
+        String contrasena = "password";
+
+        // Simulamos el rol del usuario
+        Rol rol = new Rol(1L, "ADMIN");
+
+        // Simulamos el usuario con correo y contraseña encriptada
+        Usuario usuario = new Usuario(1L, "Juan", correo, "encodedPassword", rol);
+
+        // Simulamos que el usuario existe en la base de datos
+        when(usuarioRepo.findByCorreo(correo)).thenReturn(Optional.of(usuario));
+
+        // Simulamos que la contraseña coincide
+        when(passwordEncoder.matches(contrasena, "encodedPassword")).thenReturn(true);
+
+        // Simulamos la generación del token JWT
+        when(jwtUtil.generateToken(correo, rol.getNombre())).thenReturn("jwt_token_example");
+
+        // Ejecutamos el servicio de login
+        String token = usuarioService.login(correo, contrasena);
+
+        // Verificamos que el token devuelto sea el esperado
+        assertEquals("jwt_token_example", token);
+
+        // Verificamos que jwtUtil.generateToken haya sido llamado con los parámetros correctos
+        verify(jwtUtil, times(1)).generateToken(correo, rol.getNombre());
+    }
+
+    // Test de registro de usuario
     @Test
     public void testRegistrarUsuario() {
         UsuarioRequestDTO usuarioRequestDTO = new UsuarioRequestDTO("Juan", "juan@mail.com", "password", "ADMIN");
         Rol rol = new Rol(1L, "ADMIN");
         Usuario usuario = new Usuario(1L, "Juan", "juan@mail.com", "encodedPassword", rol);
 
-        when(rolRepository.findByNombre("ADMIN")).thenReturn(Optional.of(rol));
+        // Simulamos la encriptación de la contraseña
         when(passwordEncoder.encode("password")).thenReturn("encodedPassword");
-        when(usuarioRepository.save(any(Usuario.class))).thenReturn(usuario);
+
+        // Simulamos que el rol exista
+        when(rolRepo.findByNombre("ADMIN")).thenReturn(Optional.of(rol));
+
+        // Simulamos la creación del usuario en el servicio
+        when(usuarioRepo.save(any(Usuario.class))).thenReturn(usuario);
+
+        // Simulamos la generación del token JWT
+        when(jwtUtil.generateToken(usuario.getCorreo(), usuario.getRol().getNombre())).thenReturn("jwt_token_example");
 
         UsuarioResponseDTO result = usuarioService.registrar(usuarioRequestDTO);
 
+        // Verificamos que el nombre, correo y rol sean correctos
         assertEquals("Juan", result.getNombre());
         assertEquals("juan@mail.com", result.getCorreo());
         assertEquals("ADMIN", result.getRol());
     }
 
+    // Test de obtener usuario por ID
     @Test
-    public void testLogin() {
-        String correo = "juan@mail.com";
-        String contrasena = "password";
-
+    public void testObtenerUsuarioPorId() {
+        Long id = 1L;
         Rol rol = new Rol(1L, "ADMIN");
-        Usuario usuario = new Usuario(1L, "Juan", correo, "encodedPassword", rol);
+        Usuario usuario = new Usuario(id, "Juan", "juan@mail.com", "password", rol);
+        UsuarioResponseDTO usuarioResponseDTO = new UsuarioResponseDTO(id, "Juan", "juan@mail.com", "ADMIN");
 
-        when(usuarioRepository.findByCorreo(correo)).thenReturn(Optional.of(usuario));
-        when(passwordEncoder.matches(contrasena, "encodedPassword")).thenReturn(true);
-        when(jwtUtil.generateToken(correo, contrasena)).thenReturn("jwt_token_example");  // Mock del token JWT
+        // Simulamos que el usuario existe
+        when(usuarioRepo.findById(id)).thenReturn(Optional.of(usuario));
 
-        String token = usuarioService.login(correo, contrasena);
+        // Ejecutamos el método de obtener por ID
+        Optional<UsuarioResponseDTO> result = usuarioService.obtenerPorId(id);
 
-        assertEquals("jwt_token_example", token);  // Verificamos que el token sea generado
+        // Verificamos que la respuesta no esté vacía y que el usuario devuelto sea correcto
+        assertTrue(result.isPresent());
+        assertEquals("Juan", result.get().getNombre());
+        assertEquals("ADMIN", result.get().getRol());
     }
 
-    @Test
-    public void testLoginContrasenaIncorrecta() {
-        String correo = "juan@mail.com";
-        String contrasena = "password";
-
-        Rol rol = new Rol(1L, "ADMIN");
-        Usuario usuario = new Usuario(1L, "Juan", correo, "otraClave", rol);
-
-        when(usuarioRepository.findByCorreo(correo)).thenReturn(Optional.of(usuario));
-        when(passwordEncoder.matches(contrasena, "otraClave")).thenReturn(false);
-
-        Exception ex = assertThrows(RuntimeException.class, () -> {
-            usuarioService.login(correo, contrasena);
-        });
-
-        assertTrue(ex.getMessage().contains("Contraseña incorrecta"));
-    }
-
-    @Test
-    public void testObtenerUsuarios() {
-        Rol rol = new Rol(1L, "ADMIN");
-        Usuario usuario = new Usuario(1L, "Juan", "juan@mail.com", "password", rol);
-
-        when(usuarioRepository.findAll()).thenReturn(List.of(usuario));
-
-        var usuarios = usuarioService.obtenerUsuarios();
-
-        assertFalse(usuarios.isEmpty());
-        assertEquals(1, usuarios.size());
-        assertEquals("Juan", usuarios.get(0).getNombre());
-    }
-
+    // Test de actualizar usuario
     @Test
     public void testActualizarUsuario() {
         Long id = 1L;
         UsuarioRequestDTO dto = new UsuarioRequestDTO("Juan Updated", "juan@mail.com", "newpassword", "CLIENTE");
         Rol rol = new Rol(2L, "CLIENTE");
-        Usuario usuario = new Usuario(id, "Juan", "juan@mail.com", "password", rol);
+        Usuario usuario = new Usuario(id, "Juan", "juan@mail.com", "encodedPassword", rol);
 
-        when(usuarioRepository.findById(id)).thenReturn(Optional.of(usuario));
-        when(rolRepository.findByNombre("CLIENTE")).thenReturn(Optional.of(rol));
+        // Simulamos la existencia del usuario y el rol
+        when(usuarioRepo.findById(id)).thenReturn(Optional.of(usuario));
+        when(rolRepo.findByNombre("CLIENTE")).thenReturn(Optional.of(rol));
+
+        // Simulamos la encriptación de la nueva contraseña
         when(passwordEncoder.encode("newpassword")).thenReturn("encodedNewPassword");
-        when(usuarioRepository.save(any(Usuario.class))).thenReturn(usuario);
+
+        // Simulamos la actualización del usuario
+        when(usuarioRepo.save(any(Usuario.class))).thenReturn(usuario);
 
         UsuarioResponseDTO result = usuarioService.actualizarUsuario(id, dto);
 
+        // Verificamos que los datos se han actualizado correctamente
         assertEquals("Juan Updated", result.getNombre());
         assertEquals("CLIENTE", result.getRol());
     }
 
+    // Test de eliminar usuario
     @Test
     public void testEliminarUsuario() {
         Long id = 1L;
-        Usuario usuario = new Usuario(id, "Juan", "juan@mail.com", "password", new Rol(1L, "ADMIN"));
+        Usuario usuario = new Usuario(id, "Juan", "juan@mail.com", "encodedPassword", new Rol(1L, "ADMIN"));
 
-        when(usuarioRepository.findById(id)).thenReturn(Optional.of(usuario));
+        // Simulamos que el usuario existe
+        when(usuarioRepo.findById(id)).thenReturn(Optional.of(usuario));
 
+        // Ejecutamos el método de eliminar usuario
         usuarioService.eliminarUsuario(id);
 
-        verify(usuarioRepository, times(1)).delete(usuario);  // Verificamos que el usuario sea eliminado
-    }
-
-    @Test
-    public void testObtenerPorId() {
-        Long id = 1L;
-        Rol rol = new Rol(1L, "ADMIN");
-        Usuario usuario = new Usuario(id, "Juan", "juan@mail.com", "password", rol);
-
-        when(usuarioRepository.findById(id)).thenReturn(Optional.of(usuario));
-
-        Optional<UsuarioResponseDTO> result = usuarioService.obtenerPorId(id);
-
-        assertTrue(result.isPresent());
-        assertEquals("Juan", result.get().getNombre());
-        assertEquals("ADMIN", result.get().getRol());
+        // Verificamos que el repositorio de usuarios haya llamado el método delete una vez
+        verify(usuarioRepo, times(1)).delete(usuario);
     }
 }

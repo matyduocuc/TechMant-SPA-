@@ -1,7 +1,5 @@
 package com.example.techmant_usuarios.services;
 
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.stereotype.Service;
 import com.example.techmant_usuarios.DTOs.UsuarioRequestDTO;
 import com.example.techmant_usuarios.DTOs.UsuarioResponseDTO;
 import com.example.techmant_usuarios.model.Rol;
@@ -9,6 +7,8 @@ import com.example.techmant_usuarios.model.Usuario;
 import com.example.techmant_usuarios.repository.RolRepository;
 import com.example.techmant_usuarios.repository.UsuarioRepository;
 import com.example.techmant_usuarios.util.JwtUtil;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
@@ -17,13 +17,12 @@ import java.util.stream.Collectors;
 @Service
 public class UsuarioService {
 
-    private final UsuarioRepository usuarioRepo;    // Repositorio para interactuar con la base de datos de usuarios
-    private final RolRepository rolRepo;             // Repositorio para interactuar con la base de datos de roles
-    private final BCryptPasswordEncoder passwordEncoder; // Para encriptar las contraseñas
-    private final JwtUtil jwtUtil;                   // Utilidad para manejar la generación de tokens JWT
+    private final UsuarioRepository usuarioRepo;
+    private final RolRepository rolRepo;
+    private final BCryptPasswordEncoder passwordEncoder;
+    private final JwtUtil jwtUtil;
 
-    // Constructor con inyección de dependencias
-    public UsuarioService(UsuarioRepository usuarioRepo, RolRepository rolRepo, 
+    public UsuarioService(UsuarioRepository usuarioRepo, RolRepository rolRepo,
                           BCryptPasswordEncoder passwordEncoder, JwtUtil jwtUtil) {
         this.usuarioRepo = usuarioRepo;
         this.rolRepo = rolRepo;
@@ -31,52 +30,50 @@ public class UsuarioService {
         this.jwtUtil = jwtUtil;
     }
 
-    // Método para registrar un usuario
+    // ==========================
+    //  Registro de Usuario
+    // ==========================
     public UsuarioResponseDTO registrar(UsuarioRequestDTO dto) {
-        try {
-            // Verificar si el correo ya está registrado
-            if (usuarioRepo.findByCorreo(dto.getCorreo()).isPresent()) {
-                throw new RuntimeException("El correo ya está registrado.");
-            }
-
-            // Obtener el rol ADMIN
-            Rol rol = rolRepo.findByNombre("ADMIN")
-                    .orElseThrow(() -> new RuntimeException("Rol no encontrado"));
-
-            // Encriptar la contraseña del usuario
-            String hash = passwordEncoder.encode(dto.getContrasena());
-
-            // Crear un nuevo usuario
-            Usuario usuario = new Usuario(null, dto.getNombre(), dto.getCorreo(), hash, rol);
-            usuarioRepo.save(usuario); // Guardar el usuario en la base de datos
-
-            // Retornar la respuesta DTO
-            return new UsuarioResponseDTO(usuario.getId(), usuario.getNombre(), usuario.getCorreo(), rol.getNombre());
-        } catch (Exception e) {
-            throw new RuntimeException("Error al registrar el usuario: " + e.getMessage(), e);
+        // Verificar que el correo no esté registrado
+        if (usuarioRepo.findByCorreo(dto.getCorreo()).isPresent()) {
+            throw new RuntimeException("El correo ya está registrado.");
         }
+
+        // Obtener el rol
+        Rol rol = rolRepo.findByNombre(dto.getRol())
+                .orElseThrow(() -> new RuntimeException("Rol no encontrado"));
+
+        // Encriptar la contraseña
+        String contrasenaEncriptada = passwordEncoder.encode(dto.getContrasena());
+
+        // Crear el nuevo usuario
+        Usuario usuario = new Usuario(null, dto.getNombre(), dto.getCorreo(), contrasenaEncriptada, rol);
+        usuarioRepo.save(usuario);
+
+        // Crear el DTO para la respuesta
+        return new UsuarioResponseDTO(usuario.getId(), usuario.getNombre(), usuario.getCorreo(), rol.getNombre());
     }
 
-    // Método para realizar login
+    // ==========================
+    //  Login de Usuario
+    // ==========================
     public String login(String correo, String contrasena) {
-        try {
-            // Buscar al usuario por correo
-            Usuario usuario = usuarioRepo.findByCorreo(correo)
-                    .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+        // Verificar que el correo exista
+        Usuario usuario = usuarioRepo.findByCorreo(correo)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
-            // Verificar la contraseña
-            if (!passwordEncoder.matches(contrasena, usuario.getContrasena())) {
-                throw new RuntimeException("Contraseña incorrecta");
-            }
-
-            // Generar el token JWT
-            return jwtUtil.generateToken(usuario.getCorreo(), usuario.getRol().getNombre()); // Incluir el rol en el token
-        } catch (Exception e) {
-            throw new RuntimeException("Error en el login: " + e.getMessage(), e);
+        // Verificar la contraseña
+        if (!passwordEncoder.matches(contrasena, usuario.getContrasena())) {
+            throw new RuntimeException("Contraseña incorrecta");
         }
+
+        // Generar el token JWT con el correo y el rol del usuario
+        return jwtUtil.generateToken(usuario.getCorreo(), usuario.getRol().getNombre());
     }
 
-    // Método para obtener todos los usuarios
+    // ==========================
+    //  Obtener todos los usuarios
+    // ==========================
     public List<UsuarioResponseDTO> obtenerUsuarios() {
         return usuarioRepo.findAll().stream()
                 .map(usuario -> new UsuarioResponseDTO(
@@ -88,7 +85,9 @@ public class UsuarioService {
                 .collect(Collectors.toList());
     }
 
-    // Método para obtener un usuario por ID
+    // ==========================
+    //  Obtener un usuario por ID
+    // ==========================
     public Optional<UsuarioResponseDTO> obtenerPorId(Long id) {
         return usuarioRepo.findById(id)
                 .map(usuario -> new UsuarioResponseDTO(
@@ -99,45 +98,37 @@ public class UsuarioService {
                 ));
     }
 
-    // Método para actualizar un usuario
+    // ==========================
+    //  Actualizar usuario
+    // ==========================
     public UsuarioResponseDTO actualizarUsuario(Long id, UsuarioRequestDTO dto) {
-        try {
-            // Buscar el usuario a actualizar
-            Usuario usuario = usuarioRepo.findById(id)
-                    .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+        Usuario usuario = usuarioRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
-            // Obtener el rol
-            Rol rol = rolRepo.findByNombre(dto.getRol())
-                    .orElseThrow(() -> new RuntimeException("Rol no encontrado"));
+        // Obtener el rol
+        Rol rol = rolRepo.findByNombre(dto.getRol())
+                .orElseThrow(() -> new RuntimeException("Rol no encontrado"));
 
-            // Actualizar los datos del usuario
-            usuario.setNombre(dto.getNombre());
-            usuario.setCorreo(dto.getCorreo());
+        // Actualizar usuario
+        usuario.setNombre(dto.getNombre());
+        usuario.setCorreo(dto.getCorreo());
 
-            // Si se proporciona una nueva contraseña, la encriptamos
-            if (dto.getContrasena() != null && !dto.getContrasena().isEmpty()) {
-                String hash = passwordEncoder.encode(dto.getContrasena());
-                usuario.setContrasena(hash);
-            }
-
-            usuario.setRol(rol);
-            usuarioRepo.save(usuario);
-
-            // Retornar la respuesta DTO
-            return new UsuarioResponseDTO(usuario.getId(), usuario.getNombre(), usuario.getCorreo(), rol.getNombre());
-        } catch (Exception e) {
-            throw new RuntimeException("Error al actualizar el usuario: " + e.getMessage(), e);
+        if (dto.getContrasena() != null && !dto.getContrasena().isEmpty()) {
+            usuario.setContrasena(passwordEncoder.encode(dto.getContrasena()));  // Encriptar la nueva contraseña
         }
+
+        usuario.setRol(rol);
+        usuarioRepo.save(usuario);
+
+        return new UsuarioResponseDTO(usuario.getId(), usuario.getNombre(), usuario.getCorreo(), rol.getNombre());
     }
 
-    // Método para eliminar un usuario
+    // ==========================
+    //  Eliminar usuario
+    // ==========================
     public void eliminarUsuario(Long id) {
-        try {
-            Usuario usuario = usuarioRepo.findById(id)
-                    .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
-            usuarioRepo.delete(usuario); // Eliminar el usuario de la base de datos
-        } catch (Exception e) {
-            throw new RuntimeException("Error al eliminar el usuario: " + e.getMessage(), e);
-        }
+        Usuario usuario = usuarioRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+        usuarioRepo.delete(usuario);
     }
 }
